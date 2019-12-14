@@ -1,0 +1,289 @@
+\chapter{ОПТИМАЛЬНОЕ ПРОГРАММНОЕ РЕШЕНИЕ}\label{chap4}
+В данной главе будут приведены программные решения задачи об оптимизации экономического роста страны-последователя, с помощью Direct Single Shooting и алгоритма МРС. Приводятся результаты численных экспериментов и их анализ.
+
+\section{Оптимальное программное решение с применением Direct Single Shooting}
+
+В подходе, который будет использоваться далее(на 4 курсе) решение задачи (\ref{rMM}) будет приближаться последовательным решением ряда задач оптимального управления специального вида с конечным горизонтом планирования z. Эти задачи будем называть прогнозирующими задачами оптимального управления.
+
+Конкретный вид прогнозирующих задач будет выбран позднее. Отметим, что в литературе такие задачи, как правило, отличаются от (\ref{rMM}) некоторыми модификациями в критерии качества и дополнительными терминальными ограничениями\cite{Grune}.
+
+Прогнозирующие задачи будут решаться численно, с применение метода Direct Single Shooting раздела 1.3, поэтому дальнейшее изложение будет посвящено программной реализации численных методов для решения задачи:
+
+$$
+J(x,u)=\int_0^z e^{-\rho t} [\kappa  ln x(t)+ln(b - u(t))]dt \rightarrow \max,
+$$
+$$
+\dot{x}(t) = u(t)(x(t) + \gamma y(t)),
+$$ \begin{equation}\label{ypp}x(0) = x_0,
+\end{equation}
+$$
+\dot{y}(t) = \nu y(t), $$
+$$ y(0) = y_0,  u(t) \in [0, b-\varepsilon].
+$$
+
+После определения конкретного вида прогнозирующей задачи программная реализация достаточно просто модифицируется.
+
+Для начала объявим переменные и уравнения с которыми будем работать:
+\begin{lstlisting}
+x1 = SX.sym('x');
+x2 = SX.sym('y');
+t = SX.sym('t');
+x = [x1; x2];
+u = SX.sym('u');
+
+xdot = [(x1 + gamma*x2)*u; x2*nu];
+
+\end{lstlisting}
+
+Подинтегральная функция критерия качества:
+\begin{lstlisting}
+f0 = -exp(-rho*t)*(kappa*log(x1)+log(b-u));
+\end{lstlisting}
+
+Применим алгоритм Рунге-Кутты четвертого порядка для решения ОДУ:
+
+\begin{lstlisting}
+   M = 4;
+   DT = T/N/M;
+   f = Function('f', {x, u, t}, {xdot, f0});
+   X0 = MX.sym('X0', 2);
+   U = MX.sym('U');
+   tt = MX.sym('tt');
+   X = X0
+   Q = 0;
+   for j=1:M
+       [k1, k1_q] = f(X, U, tt);
+       [k2, k2_q] = f(X + DT/2 * k1, U, tt+DT/2);
+       [k3, k3_q] = f(X + DT/2 * k2, U,tt+DT/2);
+       [k4, k4_q] = f(X + DT * k3, U,tt+DT);
+       X=X+DT/6*(k1 +2*k2 +2*k3 +k4);
+       Q = Q + DT/6*(k1_q + 2*k2_q + 2*k3_q + k4_q);
+    end
+    F = Function('F', {X0, U, tt}, {X, Q},
+    {'x0','p','t'}, {'xf', 'qf'});
+\end{lstlisting}
+
+После формулировки задачи нелинейного программирования и задача (\ref{ypp}) решается стандартной процедурой solver :
+
+\begin{lstlisting}
+
+prob = struct('f', J, 'x', vertcat(w{:}), 'g', vertcat(g{:}));
+solver = nlpsol('solver', 'ipopt', prob);
+
+sol = solver('x0', w0, 'lbx', lbw, 'ubx', ubw, ...
+             'lbg', lbg, 'ubg', ubg);
+w_opt = full(sol.x);
+
+\end{lstlisting}
+
+
+\section{Результаты численных экспериментов Direct Single Shooting}
+
+Рассмотрим различные решения задачи (\ref{ypp}) в зависимости от изменений параметров:
+\begin{itemize}
+\item $b$ -- размеры трудовых ресурсов,
+\item $\gamma$ -- емкость абсорбции,
+\item $\rho$ -- параметр дисконтирования,
+\item $\nu$ -- рост научно-исследовательского сектора страны А,
+\item $\kappa$ -- параметр эластичности замещения.
+\end{itemize}
+
+Пусть начальное количество технологий страны лидера($y_0$) в три раза превышает страны последователя($x_0$).
+Для начала положим $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$.
+
+Полученный результат изображен на рисунке \ref{fig:m1}. Из рисунка видно, что страна-последователь при таких параметрах может приблизиться к начальному уровню страны лидера, но не более того.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{1sT3V06B1P05K09XY13g01.png}
+\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$}
+\label{fig:m1}
+
+\end{figure}
+
+Положим $\gamma = 0.9$, $\nu = 0.5$ $b=1$ $\rho = 0.5$ $\kappa = 0.5$  изменения отображены на рисунке \ref{fig:m9}. За счет увеличения $\gamma$ показатели страны B временно росли с той же скоростью, что и страны лидера
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{6sT3V05B1P05K05XY13g09.png}
+\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 0.5$ $b=1$, $\rho = 0.5$, $\kappa = 0.5$}
+\label{fig:m9}
+
+\end{figure}
+
+Изменим параметры:$\gamma = 0.1$, $\nu = 0.4$ $\rho = 0.5$, $\kappa = 0.9$, $b=2$ . На рисунке \ref{fig:m2} видно при данных параметрах страна-последователь может даже обогнать страну лидер. Упор в данной плане идет не на заимствование ресурсов, а на собственный трудовые ресурсы. Поэтому рассмотрим другие варианты.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{1sT3V04B2P05K09XY13g01.png}
+\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.4$ $b=2$, $\rho = 0.5$, $\kappa = 0.9$}
+\label{fig:m2}
+
+\end{figure}
+
+Изменим параметр $\kappa = 0.5$ . Результат отображен на рисунке \ref{fig:m3}. Можем видеть, что при таких условиях на короткий промежуток страна B может догнать и находиться на уровне со страной А, но в последующем начнет сильно отставать.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{1sT3V06B2P05K05XY13g01.png}
+\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.6$ $b=2$, $\rho = 0.5$, $\kappa = 0.5$}
+\label{fig:m3}
+
+\end{figure}
+
+Положим параметры $\gamma = 0.9$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$ рисунок \ref{fig:m4}. Довольно быстро страна последователь может обогнать лидера и какое-то время развиваться быстрее, но с определенного момента времени развитие страны B прекращается, в то время как страна А продолжает развиваться.
+
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{1sT3V06B1P05K09XY13g09.png}
+\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$}
+\label{fig:m4}
+
+\end{figure}
+Если параметр $\nu = 0.4$ . Уменьшение научно-исследовательского страны А ведет к тому, что страна B медленнее догоняет страну-лидера.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.8\linewidth]{5sT3V04B1P05K06XY13g09.png}
+\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 0.4$ $b=1$, $\rho = 0.5$, $\kappa = 0.6$}
+\label{fig:m8}
+
+\end{figure}
+
+Изменим $\kappa = 1.1$ . Результаты на рисунке \ref{fig:m5} во многом походят на случай из рисунка \ref{fig:m4}, разница в том, что лидирующие позиции страна B удерживает дольше и к концу горизонта планирования практически на уровне со страной лидером.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.85\linewidth]{2sT3V06B1P05K11XY13g09.png}
+\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 1.1$}
+\label{fig:m5}
+
+\end{figure}
+
+Положим  $\nu = 1$, $\kappa = 0.9$ рисунок \ref{fig:m6}. Несмотря на то, что показатели страны А высоки, рост страны B не отличается от прогноза описанного выше(рисунок \ref{fig:m5}).
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.85\linewidth]{3sT3V1B1P05K09XY13g09.png}
+\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 1$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$}
+\label{fig:m6}
+
+\end{figure}
+
+
+
+\section{Оптимальное программное решение алгоритма МРС}
+
+Реализуем алгоритм MPC для задачи:
+$$
+J(x,u)=\int_0^z e^{-\rho t} [\kappa  ln x(t)+ln(b - u(t))]dt \rightarrow \max,
+$$
+$$
+\dot{x}(t) = u(t)(x(t) + \gamma y(t)),
+$$ \begin{equation}\label{ch3}x(0) = x_0,
+\end{equation}
+$$
+\dot{y}(t) = \nu y(t), $$
+$$ y(0) = y_0,  u(t) \in [0, b-\varepsilon].
+$$
+
+В данной реализации $xtau$ состояние системы в измеряемый момент времени, $w0$ начальное приближение. Решаем систему для $tau \in [t0, T]$. В начале $tau = t0$:
+
+\begin{lstlisting}
+
+sol = solver('x0', [xtau; w0],  'lbg', [], 'ubg', [],...
+             'lbx', [xtau; lbw], 'ubx', [xtau; ubw]);
+\end{lstlisting}
+
+Выделяем решение.
+
+\begin{lstlisting}
+
+xu = full(sol.x);
+u_opt = reshape(xu(n+1:end), r, N);
+J_opt = full(sol.f);
+\end{lstlisting}
+
+Ищем следующее состояние системы.
+
+\begin{lstlisting}
+
+res = F('x0', xtau, 'p', u_opt(1));
+xtau = full(res.xf);
+\end{lstlisting}
+
+Запоминаем текущее управление и состояние $X$.
+
+\begin{lstlisting}
+U = [U u_opt(1)];
+X = [X xtau];
+\end{lstlisting}
+Изменяем начальное приближение:
+\begin{lstlisting}
+w0 = [u_opt(2:end) zeros(1)]';
+\end{lstlisting}
+
+Переходим на $tau=tau+1$.
+
+\section{Результаты численных экспериментов алгоритма МРС}
+Сравним результаты решения задачи (\ref{ch3}) с помощью алгоритма МРС и решение задачи нелинейного программирования с помощью Direct Single Shooting. При равных параметрах:
+
+\begin{itemize}
+\item $b$ -- размеры трудовых ресурсов,
+\item $\gamma$ -- емкость абсорбции,
+\item $\rho$ -- параметр дисконтирования,
+\item $\nu$ -- рост научно-исследовательского сектора страны А,
+\item $\kappa$ -- параметр эластичности замещения.
+\end{itemize}
+
+Пусть начальное количество технологий страны лидера($y_0$) в три раза превышает страны последователя($x_0$).
+Положим $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$.
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.75\linewidth]{1sT3V06B1P05K09XY13g01.png}
+\caption{Решение задачи нелинейного программирования с помощью Direct Single Shooting}
+\label{fig:mpsdss1}
+
+\end{figure}
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.75\linewidth]{mpc1.png}
+\caption{Решение задачи с помощью алгоритма МРС}.
+\label{fig:mpsdss2}
+
+\end{figure}
+Из графиков на рисунках \ref{fig:mpsdss1} и  \ref{fig:mpsdss2} можно сделать вывод, что управление получаемое с помощью МРС является более эффективным, так как система не переходит в стационарное состояние, а продолжает свой рост.
+
+Сравним управления на рисунках \ref{fig:mpsdss3} и  \ref{fig:mpsdss4} :
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.75\linewidth]{udss.png}
+\caption{Управление из решения задачи нелинейного программирования с помощью Direct Single Shooting}
+\label{fig:mpsdss3}
+
+\end{figure}
+
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.75\linewidth]{umpc.png}
+\caption{Управление из решения задачи с помощью алгоритма МРС}.
+\label{fig:mpsdss4}
+
+\end{figure}
+
+\bigskip
