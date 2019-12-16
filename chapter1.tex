@@ -91,7 +91,7 @@ $$J(u^0) = \extr J(u),$$
 \int^{t_{f}}_{ t_{0}}
 f_0(x(t),u(t),t)dt \rightarrow \min, $$
  \begin{equation}\label{tr2}\dot{x}(t)=f(x(t),u(t),t), x(t_0)=x_0,\end{equation}
-$$u(t) \in U, t\in [t_0,t_f],$$
+$$u(t) \in U, t\in [t_0,t_f].$$
 
 \subsection{Принцип максимума Понтрягина}
 
@@ -124,7 +124,7 @@ $$ \dot{\psi } = - \frac{\partial{H}}{\partial{x}}(x, \psi , u(x, \psi , t), t),
 Рассмотрим задачу (\ref{tr2}) и предположим, что она имеет решение. Следуя динамическому программированию\cite{Bellman}, погрузим задачу (\ref{tr2}) в семейство задач
 $$ J_{\tau ,z}(u) = \varphi (x(t_f)) + \int^{t_{f}}_{\tau }
 f_0(x(t),u(t),t)dt \rightarrow \min, $$
- \begin{equation}\label{dp1}\dot{x}(t)=f(x,u), x(\tau )=z, x(t_f) \in X\end{equation}
+ \begin{equation}\label{dp1}\dot{x}(t)=f(x,u), x(\tau )=z, x(t_f) \in X,\end{equation}
 $$u(t) \in , t\in T = [\tau ,t_f],$$
 зависящих от скаляра $\tau \in T$ и $n$-вектора $z.$
 
@@ -133,7 +133,7 @@ $$u(t) \in , t\in T = [\tau ,t_f],$$
 Функцию\begin{equation}\label{fb} B(\tau ,z), z \in X_{\tau}, \tau \in T,\end{equation} называют функцией Беллмана.
 
 Уравнение в частных производных, которому удовлетворяет функция (\ref{fb}), называют уравнение Беллмана
-\begin{equation}\label{ub} -\frac{\partial B(\tau,z)}{\partial\tau} = \min_{v \in U}\left\{ \frac{\partial B'(\tau,z)}{\partial z}f(z,v) + f_0(z,v)\right\}, z \in X_\tau, \tau \in T,\end{equation}
+\begin{equation}\label{ub} -\frac{\partial B(\tau,z)}{\partial\tau} = \min_{v \in U}\left\{ \frac{\partial B'(\tau,z)}{\partial z}f(z,v) + f_0(z,v)\right\}, z \in X_\tau, \tau \in T.\end{equation}
 Выделяя из семейства (\ref{dp1}) задачу с $\tau = t_f$, находим граничное условие для уравнения Беллмана
 \begin{equation}\label{gusl}B(t_f,z)=\begin{cases}
 \varphi(z), если z \in X, \\
@@ -141,14 +141,17 @@ $$u(t) \in , t\in T = [\tau ,t_f],$$
 \end{cases}\end{equation}
 
 Схема применения динамического программирования состоит в следующем:
-
-Для задач составляется уравнение Беллмана. По решению уравнения строиться позиционное решение. Эффективно стоить уравнения Беллмана удается в редких случаях. В общем случае необходимо привлекать численные методы.
+\begin{itemize}
+  \item Для задач составляется уравнение Беллмана. 
+  \item По решению уравнения строиться позиционное решение.
+ \end{itemize}
+Эффективно строить уравнения Беллмана удается в редких случаях. В общем случае необходимо привлекать численные методы.
 \section{Классификация численных методов решения. Прямые методы}
 Численные методы решения задач оптимального управления можно разделить на три категории:
 \begin{itemize}
 \item динамическое программирование;
 \item непрямые методы, основанные на принципе максимума;
-\item прямые методы;
+\item прямые методы.
 \end{itemize}
 
 
@@ -161,7 +164,7 @@ $$u(t) \in , t\in T = [\tau ,t_f],$$
 Последняя группа методов является самой распространенной в практических приложениях, поэтому далее описываются два представителя класса прямых методов: Direct Single Shooting(DSS) и Direct Multiple Shooting(DMS).
 \subsection{Direct Single Shooting}
 
-Опишем основные принципы метода DSS на примере задачи управления нелинейной стационарной системой с критерием качества типа Больца, со смешанными и терминальными ограничениями.
+Опишем основные принципы метода DSS на примере задачи управления нелинейной стационарной системой с критерием качества типа Больца, со смешанными и терминальными ограничениями:
  $$J(x,u) = \int^{t_f}_0 f_0(x(t),u(t))dt + \varphi(x(t_{f})) \rightarrow \min_{x,u},$$
  $$x(0)=x_0,$$
 \begin{equation}\label{zzz}\dot{x}=f(x(t),u(t)), t \in [0, t_f],\end{equation}
