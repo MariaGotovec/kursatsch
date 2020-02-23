@@ -5,25 +5,26 @@ clear all
 addpath('D:/casadi-windows-matlabR2016a-v3.4.5') 
 import casadi.*
 
-
-T = 3; % Time horizon 
-N = 30; % number of control intervals
-gamma = 0.2;
+mpc=100;
+T = 10; % Time horizon 3sT3V1B1P05K09XY13g09
+N = 50; % number of control intervals
+gamma = 0.6;
 nu = 0.4;
-b = 2;
-rho = 0.5;
-kappa = 0.4;
-z0 = [1; 3];
-n=2;
+b = 1;
+rho = 0.7;
+kappa = 0.9;
+epslonn = 0;
+z0 = [0.4];
+n=1;
 r=1;
 % Declare model variables
 t = SX.sym('t');
 x1 = SX.sym('x1');
-x2 = SX.sym('x2');
+
 u = SX.sym('u');
 
 % Model equations
-xdot = [(x1 + gamma*x2)*u; x2*nu];
+xdot = [(x1 + gamma)*u - nu*x1];
 
 % Objective term
 f0 = -exp(-rho*t)*(kappa*log(x1)+log(b-u));%???^rho
@@ -38,7 +39,7 @@ if false
     F = integrator('F', 'cvodes', ode, struct('tf', T/N));
 else
    DT = T/N;
-   f = Function('f', {[x1;x2], u, t}, {xdot, f0});
+   f = Function('f', {x1, u, t}, {xdot, f0});
    X0 = MX.sym('X0', n);
    U = MX.sym('U');
    tt = MX.sym('tt');
@@ -70,13 +71,13 @@ nlp = struct('f', J, 'x', [z(:); u(:)], 'g', []);
 solver = nlpsol('solver', 'ipopt', nlp);
 
 lbw = zeros(N,r);
-ubw = b*ones(N,r);
+ubw = (b-epslonn)*ones(N,r);
 w0 = zeros(N,r);
 
 
 %MPC
 
-Nmpc = N;
+Nmpc = mpc;
 xtau = z0;
 X = z0;
 U = [];
@@ -94,27 +95,28 @@ u_opt = reshape(xu(n+1:end), r, N);
  
   J_opt = full(sol.f);         
 % найти следующее состояние
-    res = F('x0', xtau, 'p', u_opt(1));
+    res = F('x0', xtau, 'p', u_opt(1),'t', T/N);
     xtau = full(res.xf);
  % запомнить текущее состояние
     U = [U u_opt(1)];
     X = [X xtau];
     % подготовить приближение
    w0 = [u_opt(2:end) zeros(1)]';
+  % results(T/N*(0:tau+1),X,U,J_opt,t_Elapsed,1)
 end
  
 % Plot the solution
 
-x1_opt = X(1,:)
-x2_opt = X(2,:)
+x1_opt = X(1,:);
+
 U
 tgrid = linspace(0, T, Nmpc+2);
 clf;
 hold on
+
 plot(tgrid, x1_opt, '--', 'LineWidth',2)
-plot(tgrid, x2_opt, '-','LineWidth',2)
 stairs(tgrid, [U'; nan], '-.','LineWidth',2)
 xlabel('t')
-legend('x','y','u')
+legend('z','u')
 
 end
