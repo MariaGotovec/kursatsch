@@ -186,17 +186,10 @@ w_opt = full(sol.x);
 \section{Оптимальное программное решение с применением алгоритма МРС}
 
 Реализуем алгоритм MPC для задачи:
-$$
-J(x,u)=\int_0^z e^{-\rho t} [\kappa  ln x(t)+ln(b - u(t))]dt \rightarrow \max,
-$$
-$$
-\dot{x}(t) = u(t)(x(t) + \gamma y(t)),
-$$ \begin{equation}\label{ch3}x(0) = x_0,
+$$ J(z,u) = \int_0^\infty e^{-\rho t} [\kappa  ln z(t) + ln (b-u(t))]dt, $$
+\begin{equation}\label{ypp} \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ u(t) \in [0,b-\varepsilon],
 \end{equation}
-$$
-\dot{y}(t) = \nu y(t), $$
-$$ y(0) = y_0,  u(t) \in [0, b-\varepsilon].
-$$
+$$z(0) = z_0.$$
 
 В данной реализации $xtau$ состояние системы в измеряемый момент времени, $w0$ начальное приближение. Решаем систему для $tau \in [t0, T]$. В начале $tau = t0$:
 
@@ -249,14 +242,13 @@ w0 = [u_opt(2:end) zeros(1)]';
 \item $\nu$ -- рост научно-исследовательского сектора страны А,
 \item $\kappa$ -- параметр эластичности замещения.
 \end{itemize}
-
-
+что-то похожее на правду
 
 \begin{figure}[!h!]
 
 \centering
-\includegraphics[width=0.75\linewidth]{mpc200.png}
-\caption{МРС c NMPC = 200}.
+\includegraphics[width=0.75\linewidth]{mpc100.png}
+\caption{МРС c NMPC = 100}.
 \label{fig:mpc11}
 
 \end{figure}
@@ -264,4 +256,3 @@ w0 = [u_opt(2:end) zeros(1)]';
 
 \bigskip
 
- 
