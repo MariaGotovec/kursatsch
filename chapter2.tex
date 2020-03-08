@@ -129,20 +129,24 @@ $$u(t) \in [0, b-\varepsilon].$$
 Для упрощения формулировки задачи (\ref{rMM}), понизим размерность фазового вектора до единицы. Обозначим:
 $$z(t)=\frac{x(t)}{y(t)}, \ t \geq 0, \  z_0=\frac{x_0}{y_0}.$$
 
-Тогда для любой допустимой тройки $(x,y,u)$ из (\ref{rMM}) получим дифференциальное уравнение для изменяющейся переменной $z$ во времени:
+Тогда для любой допустимой тройки $(x,y,u)$ из (\ref{rMM}) получим дифференциальное уравнение для изменения переменной $z$ во времени:
 $$\dot{z}(t) = \frac{1}{y(t)}\dot{x}(t) - \frac{x(t)}{y^2(t)}\dot{y}(t)=$$ $$ = \frac{u(t)(x(t)+\gamma y(t))}{y(t)} - \frac{x(t)}{y^2(t)}\nu y(t)=$$$$ = u(t)(z(t) +\gamma)-\nu z(t),$$
 и вычислим значение критерия качества:
 $$
- J(x,u)=\int_0^\infty e^{-\rho t} [\kappa  ln (z(t)y(t))+ ln(b-u(t))] dt =$$ $$= \int_0^\infty e^{-\rho t} [\kappa  ln z(t)+\kappa ln y(t) + ln (b-u(t))]dt = $$
- $$=\int_0^\infty e^{-\rho t} [\kappa ln z(t) +\kappa ln(y_0e^{\nu t})+ln(b-u(t))]dt =$$ $$= \int_0^\infty e^{-\rho t} [\kappa  ln z(t) + ln (b-u(t))]dt + C,$$
+ J(x,u)=\int_0^\infty e^{-\rho t} [\kappa  \ln (z(t)y(t))+ \ln(b-u(t))] dt =$$ $$= \int_0^\infty e^{-\rho t} [\kappa  \ln z(t)+\kappa \ln y(t) + \ln (b-u(t))]dt = $$
+ $$=\int_0^\infty e^{-\rho t} [\kappa \ln z(t) +\kappa \ln(y_0e^{\nu t})+\ln(b-u(t))]dt =$$ $$= \int_0^\infty e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt + C,$$
 где константа $C$ вычисляется по формуле:
-$$C = \int_0^\infty e^{-\rho t} [\kappa  ln y_0 + \kappa\nu t]dt.$$
+$$C = \int_0^\infty e^{-\rho t} [\kappa  \ln y_0 + \kappa\nu t]dt.$$
 
 Получим задачу:
-$$ I(z,u) = \int_0^\infty e^{-\rho t} [\kappa  ln z(t) + ln (b-u(t))]dt, $$
-\begin{equation}\label{redzou} \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ u(t) \in [0,b-\varepsilon],
+$$ 
+    I(z,u) = \int_0^\infty e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt \to \max, $$
+\begin{equation}\label{redzou} 
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ z(0) = z_0,
 \end{equation}
-$$z(0) = z_0.$$
+$$
+    u(t) \in [0,b-\varepsilon], \ t\ge 0.
+    $$
 Отсюда следует заключение об эквивалентности двух задач оптимального управления.
 \begin{lemma}\label{ekv}\cite{Kryazhimski} Задачи оптимального управления (\ref{rMM}) и (\ref{redzou}) эквивалентны. Именно справедливы  следующие утверждения:
 \begin{itemize}
@@ -152,5 +156,5 @@ $$z(0) = z_0.$$
 \end{lemma}
 
 \bigskip
-Далее для анализа решения задачи (\ref{rMM}) при решении задачи МРС-алгоритмом будем использовать эквивалентную ей редуцированную задачу (\ref{redzou}). 
+Далее для анализа решения задачи (\ref{rMM}) при решении задачи МРС-алгоритмом будем использовать эквивалентную ей редуцированную задачу (\ref{redzou}).
 \section{Решение редуцированной задачи}\label{2sec:reshred} 
