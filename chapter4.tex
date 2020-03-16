@@ -159,125 +159,9 @@ w_opt = full(sol.x);
 
 \end{lstlisting}
 
-В следующем разделе рассмотрим результаты работы приведенной реализаций.
-
-\section{Результаты численных экспериментов}
-
-Рассмотрим различные решения задачи (\ref{41}) в зависимости от изменений параметров:
-\begin{itemize}
-\item $b$ -- размеры трудовых ресурсов,
-\item $\gamma$ -- емкость абсорбции,
-\item $\rho$ -- параметр дисконтирования,
-\item $\nu$ -- рост научно-исследовательского сектора страны А,
-\item $\kappa$ -- параметр эластичности замещения.
-\end{itemize}
-
-Для анализа решения построим необходимы фазовые графики которые удовлетворяют невырожденным уравнениям:
-$$\dot{z}(t) =(b-\nu)z(t)+b\gamma-\frac{1}{p(t)},$$
-$$\dot{p}(t) = -(b-\nu-\rho)p(t)-\frac{\gamma\kappa+(\kappa+1)z(t)}{z(t)+\gamma)z(t)},$$
-$$(z(t),p(t)) \in G_1,$$
-где
-$$G_1 = {(z,p) \in \R^2: z>0, \  p\geq \overline{h}(z)},$$
-
-или вырожденным уравнениям:
-
-$$\dot{z}(t) =-\nu z(t),$$
-$$\dot{p}(t) = (\nu + \rho)p(t)-\frac{\kappa}{z(t)},$$
-$$(z(t),p(t)) \in G_2,$$
-где
-$$G_2 = {(z,p) \in \R^2: z>0, \  0<p<\overline{h}(z)},$$
-
-Функция $\overline{h}$ для любого $z>0$
-$$\overline{h}(z)=\frac{1}{b(z+\gamma)}$$
-
-Пусть начальное количество технологий страны лидера $y_0$ в три раза превышает страны последователя $x_0$)
-Для начала положим $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$.
-
-Полученный результат изображен на рисунке \ref{fig:m1}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{1sT3V06B1P05K09XY13g01.png}
-\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$}
-\label{fig:m1}
-
-\end{figure}
-
-Положим $\gamma = 0.5$, $\nu = 0.1$ $b=1$, $\rho = 0.3$, $\kappa = 0.3$ рисунок \ref{fig:m5}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{k03p05b09g05nu01.png}
-\caption{Решение для параметров: $\gamma = 0.5$, $\nu = 0.1$ $b=1$, $\rho = 0.3$, $\kappa = 0.3$}
-\label{fig:m5}
-
-\end{figure}
-
-Положим $\gamma = 0.9$, $\nu = 0.5$ $b=1$ $\rho = 0.5$ $\kappa = 0.5$  изменения отображены на рисунке \ref{fig:m9}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{6sT3V05B1P05K05XY13g09.png}
-\caption{Решение для параметров: $\gamma = 0.9$, $\nu = 0.5$ $b=1$, $\rho = 0.5$, $\kappa = 0.5$}
-\label{fig:m9}
-
-\end{figure}
-
-Изменим параметры:$\gamma = 0.6$, $\nu = 0.7$ $b=1$, $\rho = 0.5$, $\kappa = 0.3$. На рисунке \ref{fig:m2}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{k03p03b1g06nu07.png}
-\caption{Решение для параметров: $\gamma = 0.6$, $\nu = 0.7$ $b=1$, $\rho = 0.5$, $\kappa = 0.3$}
-\label{fig:m2}
-
-\end{figure}
-
-Изменим параметр $\kappa = 0.5$ . Результат отображен на рисунке \ref{fig:m3}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{1sT3V06B1P05K05XY13g01.png}
-\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.6$ $b=2$, $\rho = 0.5$, $\kappa = 0.5$}
-\label{fig:m3}
-
-\end{figure}
-
-Положим  $\gamma = 0.1$, $\nu = 0.4$ $b=1$, $\rho = 0.1$, $\kappa = 0.1$ рисунок \ref{fig:m6}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{k01p01b1g01nu04.png}
-\caption{Решение для параметров: $\gamma = 0.1$, $\nu = 0.4$ $b=1$, $\rho = 0.1$, $\kappa = 0.1$}
-\label{fig:m6}
-
-\end{figure}
-
-Положим  $\gamma = 0.5$, $\nu = 0.4$ $b=0.9$, $\rho = 0.1$, $\kappa = 0.1$ рисунок \ref{fig:m4}.
-
-\begin{figure}[!h!]
-
-\centering
-\includegraphics[width=0.7\linewidth]{k01p01b09g05nu04.png}
-\caption{Решение для параметров: $\gamma = 0.5$, $\nu = 0.4$ $b=0.9$, $\rho = 0.1$, $\kappa = 0.1$}
-\label{fig:m4}
-
-\end{figure}
-
-
 \section{Оптимальное программное решение с применением алгоритма МРС}
 
-Реализуем алгоритм MPC для задачи:
-$$ J(z,u) = \int_0^\infty e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt, $$
-\begin{equation}\label{ypp} \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ u(t) \in [0,b-\varepsilon],
-\end{equation}
-$$z(0) = z_0.$$
+Реализуем алгоритм MPC для задачи (\ref{41})-(\ref{42})
 
 В данной реализации $xtau$ состояние системы в измеряемый момент времени, $w0$ начальное приближение. Решаем систему для $tau \in [t0, T]$. В начале $tau = t0$:
 
@@ -317,11 +201,12 @@ w0 = [u_opt(2:end) zeros(1)]';
 
 Переходим на $tau=tau+1$.
 
+В следующем разделе рассмотрим результаты работы приведенной реализаций.
 
 
-\section{Результаты численных экспериментов алгоритма МРС}
+\section{Результаты численных экспериментов}
 
-Рассмотрим различные решения задачи (\ref{ypp}) в зависимости от изменений параметров:
+Рассмотрим различные решения задачи (\ref{41}) в зависимости от изменений параметров:
 \begin{itemize}
 \item $b$ -- размеры трудовых ресурсов,
 \item $\gamma$ -- емкость абсорбции,
@@ -329,40 +214,43 @@ w0 = [u_opt(2:end) zeros(1)]';
 \item $\nu$ -- рост научно-исследовательского сектора страны А,
 \item $\kappa$ -- параметр эластичности замещения.
 \end{itemize}
-что-то похожее на правду
 
-\begin{figure}[!h!]
+Для анализа решения построим необходимы фазовые графики которые удовлетворяют невырожденным уравнениям:
+$$\dot{z}(t) =(b-\nu)z(t)+b\gamma-\frac{1}{p(t)},$$
+$$\dot{p}(t) = -(b-\nu-\rho)p(t)-\frac{\gamma\kappa+(\kappa+1)z(t)}{z(t)+\gamma)z(t)},$$
+$$(z(t),p(t)) \in G_1,$$
+где
+$$G_1 = {(z,p) \in \R^2: z>0, \  p\geq \overline{h}(z)},$$
 
-\centering
-\includegraphics[width=0.75\linewidth]{mpc100.png}
-\caption{МРС c NMPC = 100}.
-\label{fig:mpc11}
+или вырожденным уравнениям:
 
-\end{figure}
-\begin{figure}[!h!]
+$$\dot{z}(t) =-\nu z(t),$$
+$$\dot{p}(t) = (\nu + \rho)p(t)-\frac{\kappa}{z(t)},$$
+$$(z(t),p(t)) \in G_2,$$
+где
+$$G_2 = {(z,p) \in \R^2: z>0, \  0<p<\overline{h}(z)},$$
 
-\centering
-\includegraphics[width=0.75\linewidth]{a1b1c1.png}
-\caption{МРС c NMPC = 100}.
-\label{fig:mpc11}
+Функция $\overline{h}$ для любого $z>0$
+$$\overline{h}(z)=\frac{1}{b(z+\gamma)}$$
 
-\end{figure}
-\begin{figure}[!h!]
+Пусть начальное количество технологий страны лидера $y_0$ в три раза превышает страны последователя $x_0$)
+Для начала положим $\gamma = 0.1$, $\nu = 0.6$ $b=1$, $\rho = 0.5$, $\kappa = 0.9$.
 
-\centering
-\includegraphics[width=0.75\linewidth]{a4b2c6.png}
-\caption{МРС c NMPC = 100}.
-\label{fig:mpc11}
+Полученный результат изображен на рисунке \ref{fig:m1}.
 
-\end{figure}
-\begin{figure}[!h!]
+Положим $\gamma = 0.5$, $\nu = 0.1$ $b=1$, $\rho = 0.3$, $\kappa = 0.3$ рисунок \ref{fig:m5}.
 
-\centering
-\includegraphics[width=0.75\linewidth]{a2b2c6.png}
-\caption{МРС c NMPC = 100}.
-\label{fig:mpc11}
 
-\end{figure}
+Положим $\gamma = 0.9$, $\nu = 0.5$ $b=1$ $\rho = 0.5$ $\kappa = 0.5$  изменения отображены на рисунке \ref{fig:m9}.
 
-\bigskip
+
+Изменим параметры:$\gamma = 0.6$, $\nu = 0.7$ $b=1$, $\rho = 0.5$, $\kappa = 0.3$. На рисунке \ref{fig:m2}.
+
+Изменим параметр $\kappa = 0.5$ . Результат отображен на рисунке \ref{fig:m3}.
+
+Положим  $\gamma = 0.1$, $\nu = 0.4$ $b=1$, $\rho = 0.1$, $\kappa = 0.1$ рисунок \ref{fig:m6}.
+
+
+Положим  $\gamma = 0.5$, $\nu = 0.4$ $b=0.9$, $\rho = 0.1$, $\kappa = 0.1$ рисунок \ref{fig:m4}.
+
 
