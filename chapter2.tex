@@ -66,8 +66,8 @@ $$\frac{d}{dt}(\ln N(t))=\frac{L_N(t)}{a}.$$
 $$J(N,L_N)= (1/\alpha - 1)\frac{\ln N_0}{\rho} + \int^\infty_0 e^{- \rho t}\left\{(1/\alpha - 1) \frac{ L_N(t)}{a} + \ln(L-L_N(t))\right\}dt.$$
 Поскольку в последнем равенстве подынтегральное выражение не зависит от траектории $N$, то функционал полезности принимает свое максимальное значение при постоянном управлении $L^*_N$, доставляющем максимум подынтегральному выражению. Следовательно, оптимальное управление $L^*_N$ в задаче (\ref{z12}) постоянно и определяется следующим образом:
 \begin{equation}\label{LB}L^*_N=\begin{cases}
-L - \frac{a\alpha \rho}{1 - \alpha},    \frac{a\alpha \rho}{1 - \alpha} < L, \\
-0,     \frac{a\alpha \rho}{1 - \alpha} \geq L.
+L - \frac{a\alpha \rho}{1 - \alpha},  \  \frac{a\alpha \rho}{1 - \alpha} < L, \\
+0,  \  \frac{a\alpha \rho}{1 - \alpha} \geq L.
 \end{cases}\end{equation}
 
 Из формулы (\ref{LB}) вытекает, что в автаркическом случае при эффективности научно-исследовательского сектора экономики и малом параметре дисконтирования:
@@ -92,20 +92,28 @@ $$
 J(N^B,L_N^B)=\int_0^\infty e^{-\rho^Bt} \left \{ (\frac{1}{\alpha} - 1) ln N^B(t)+ln(L^B - L^B_N(t))\right \}dt \rightarrow \max ,
 $$
 \begin{equation}\label{MMtp}
-\dot{N}^B(t) = \frac{L^B_N}{a^B}(N^B(t)+\gamma N^A(t)), L^B_N(t) \in [0,L^B[,
+\dot{N}^B(t) = \frac{L^B_N}{a^B}(N^B(t)+\gamma N^A(t)), \ L^B_N(t) \in [0,L^B[,
 \end{equation}
 
 $$
 \dot{N}^A(t)=g^AN^A(t),$$
-$$ N^A(0)=N_0^A , N^B(0)=N_0^B.$$
-Здесь $g^A, L^B, a^B,\gamma$ --- положительные параметры, $n_0^A > 0, N_0^B > 0$ --- заданные начальные состояния.
+$$ N^A(0)=N_0^A , \ N^B(0)=N_0^B.$$
+Здесь $g^A, \ L^B, \ a^B, \ \gamma$ --- положительные параметры, $n_0^A > 0, \ N_0^B > 0$ --- заданные начальные состояния.
 
 Для упрощения будем использовать следующие обозначения:
 
 $$
-x(t) = N^B(t),
-b = \frac{L^B}{a^B},$$ $$ u(t) = \frac{L_N^B(t)}{a^B},
-\rho = \rho^B,$$ $$ y(t) = N^A(t),  \nu=g^A, $$  $$ \kappa = \frac{1}{\alpha}-1.
+x(t) = N^B(t), \ 
+b = \frac{L^B}{a^B},$$ 
+
+$$
+ u(t) = \frac{L_N^B(t)}{a^B}, \ 
+\rho = \rho^B,$$ 
+$$ 
+y(t) = N^A(t), \ \nu=g^A, 
+$$ 
+ $$
+  \kappa = \frac{1}{\alpha}-1.
 $$
 Используя обозначения выше перепишем задачу (\ref{MMtp}):
 $$
@@ -117,9 +125,9 @@ $$ \begin{equation}\label{rMM}x(0) = x_0,
 \end{equation}
 $$
 \dot{y}(t) = \nu y(t), $$
-$$ y(0) = y_0,  u(t) \in [0, b[,
+$$ y(0) = y_0, \ u(t) \in [0, b[,
 $$
-где $b,\gamma ,\rho ,\nu , \kappa$ --- положительные параметры, $\gamma < 1$; $x_0$ и $y_0$ --- положительные начальные состояния фазовых переменных.
+где $b, \ \gamma , \ \rho , \ \nu ,  \ \kappa$ --- положительные параметры, $\gamma < 1$; $x_0$ и $y_0$ --- положительные начальные состояния фазовых переменных.
 
 Заметим, что задача (\ref{rMM}) не вкладывается полностью в постановку общей задачи оптимального управления из-за присутствия открытого интервала в ограничениях на управления. Поэтому модифицируем эти ограничения, ослабив верхнее на величину $\varepsilon$:
 $$u(t) \in [0, b-\varepsilon].$$
@@ -187,12 +195,12 @@ $$\Gamma_2 = \{(z,p) \in \R^2: z>0, \  0<p<\overline{h}(z)\},$$
 
 Определим функции $\varphi_1 : \R^2_{++}\mapsto\R$ и $\varphi_2 : \R^2_{++}\mapsto\R$:
 $$\varphi_1(z,p)=\begin{cases}
-(b-\nu)z+b\gamma-\frac{1}{p},\ \ (z,p)\in \Gamma_1 \\
--\nu z, \ \ (z,p)\in \Gamma_2,
+(b-\nu)z+b\gamma-\frac{1}{p},\ (z,p)\in \Gamma_1 \\
+-\nu z, \  (z,p)\in \Gamma_2,
 \end{cases}$$
 $$\varphi_2(z,p)=\begin{cases}
--(b-\nu -\rho)p - \frac{\gamma\kappa+(\kappa-1)z}{(z+\gamma)z},\ \ (z,p)\in \Gamma_1 \\
-(\nu+\rho)p-\frac{\kappa}{z}, \ \ (z,p)\in \Gamma_2.
+-(b-\nu -\rho)p - \frac{\gamma\kappa+(\kappa-1)z}{(z+\gamma)z}, \ (z,p)\in \Gamma_1 \\
+(\nu+\rho)p-\frac{\kappa}{z},  \ (z,p)\in \Gamma_2.
 \end{cases}$$
 Заметим что эти функции непрерывны.
 
@@ -205,16 +213,16 @@ $$\varphi_2(z,p)=\begin{cases}
   \item при $t\geq0$ имеем
   $$
   u^0(t)=\begin{cases}
-b-\frac{1}{p(t)(z^0(t)+\gamma)},\ \ (z^0(t),p(t))\in \Gamma_1 \\
-0, \ \ (z^0(t),p(t))\in \Gamma_2.
+b-\frac{1}{p(t)(z^0(t)+\gamma)},\ (z^0(t),p(t))\in \Gamma_1 \\
+0, \  (z^0(t),p(t))\in \Gamma_2.
 \end{cases}
   $$
   \item выполняются условия трансверсальности
-  $$ \lim_{t\rightarrow\infty} e^{-\rho t}z^0(t)p(t) = 0, \ \ \lim_{t\rightarrow\infty}e^{-\rho t}p(t)=0;$$
+  $$ \lim_{t\rightarrow\infty} e^{-\rho t}z^0(t)p(t) = 0, \ \lim_{t\rightarrow\infty}e^{-\rho t}p(t)=0;$$
   более того,
-  $$p(t)z^0(t)\leq\frac{\kappa}{\rho}, \ \ \forall t\geq 0 ;$$
+  $$p(t)z^0(t)\leq\frac{\kappa}{\rho}, \ \forall t\geq 0 ;$$
   \item выполняется условие стационарности
-  $$M(z^0(t),p(t))=\rho e^{\rho t}\int_t^\infty e^{-\rho s} [\kappa  \ln z^0(s) + \ln (b-u^0(s))]ds, \ \ \forall t\geq 0 $$
+  $$M(z^0(t),p(t))=\rho e^{\rho t}\int_t^\infty e^{-\rho s} [\kappa  \ln z^0(s) + \ln (b-u^0(s))]ds, \ \forall t\geq 0 $$
 
 \end{itemize}
 \end{corollary}
@@ -384,8 +392,8 @@ $$
   \item оптимальная траектория $z^0$ есть компонента равновесного решения $(z^0,p^0)$ гамильтоновой системы, определяемого начальным состоянием $z_0$ управляемой системы задачи (\ref{redzou});
   \item оптимальное управление $u^0$ имеет вид
   $$u^0(t)=\begin{cases}
-b-\frac{1}{p(t)(z^0(t)+\gamma)},\ \ (z^0(t),p(t))\in \Gamma_1 \\
-0, \ \ (z^0(t),p(t))\in \Gamma_2.
+b-\frac{1}{p(t)(z^0(t)+\gamma)},\  (z^0(t),p(t))\in \Gamma_1 \\
+0, \  (z^0(t),p(t))\in \Gamma_2.
 \end{cases}$$
 \end{itemize}
 \end{theorem}
