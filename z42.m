@@ -17,14 +17,14 @@ T = 20;  % горизонт
 N = 100; % кол-во интервалов квантования
 
 % Параметры задачи ОУ  CASE: A1B1C7
-gamma = 0.5;
+gamma = 0.3;
 nu = 0.3;
 b = 0.4;
 rho = 0.14;
-kappa = 1;
+kappa = 0.5;
 eps = 0;
-pmax = 15;
-zmax = 3;
+pmax = 12;
+zmax = 0.4;
 
 
 % Начальные условия
@@ -97,14 +97,16 @@ t_Elapsed = toc;
 J_opt = -full(sol.f);
 primal = full(sol.x);
 dual = full(sol.lam_x);
-if dual(N)<0
-    dual(N)=-1*dual(N);
-end;
+
 u_opt = reshape(primal(n+1:end), r, N);
 del_opt = reshape(dual(n+1:end), r, N);
-[x_opt, p_opt] = PIsystem(0:DT:T, xtau, dual(N), u_opt);
+dv=del_opt(N);
+if dv<0
+    dv=dv*(-1)
+end;
+[x_opt, p_opt] = PIsystem(0:DT:T, xtau, dv, u_opt);
     
- 
+ p_opt=flip(p_opt);
 results(0:DT:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
 
 %-------------------------------------------------------------
