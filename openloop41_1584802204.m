@@ -1,4 +1,4 @@
-function mpc43
+function mpc41
 clc
 close all
 
@@ -17,15 +17,14 @@ T = 20;  % горизонт
 N = 100; % кол-во интервалов квантования
 
 % Параметры задачи ОУ  CASE: A1B1C7
-gamma = 0.5;
-nu = 0.7;
-b = 0.7;
-rho = 0.1;
-kappa =1.3;
+gamma = 0.3;
+nu = 0.3;
+b = 0.3;
+rho = 0.14;
+kappa =0.5;
 eps = 0;
 pmax = 15;
-zmax = 4;
-
+zmax = 0.3;
 
 % Начальные условия
 y0=1;
@@ -74,9 +73,6 @@ for k = 1:N
     res = F('x0', x, 'p', u(k), 't', (k-1)*DT);    % x(delta | 0, x, u(k))
     x   = res.xf;
     J   = J + res.qf;
-    if k==N
-        J=J-exp(-rho*T)*p_s*x;
-    end
 end
 
 % Создаем NLP-solver
@@ -96,12 +92,12 @@ sol = solver('x0', [xtau; w0],  'lbg', [], 'ubg', [],...
 t_Elapsed = toc;         
 
 % Восстанавливаем решение: управление и двойственные переменные         
-J_opt = -full(sol.f);
+J_opt = full(sol.f);
 primal = full(sol.x);
 %dual = full(sol.lam_x);
 u_opt = reshape(primal(n+1:end), r, N);
 %del_opt = reshape(dual(n+1:end), r, N);
-[x_opt, p_opt] = PIsystem(0:DT:T, xtau, p_s, u_opt);
+[x_opt, p_opt] = PIsystem(0:DT:T, xtau, 0, u_opt);
     
  
 results(0:DT:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
@@ -166,15 +162,15 @@ function [z_s,p_s] = SteadyState
         H = [H h(zi)];
     end
     plot(0:0.01:zmax,H,'k'); % график функции h(z)
+   
     fill([0 0:0.01:zmax zmax], [0 H 0],[0.9 0.9 0.9]);
         
     fimplicit( @phi_1,[0.01 zmax 0.01 pmax],'--r'); % график функции V1
     fimplicit( @phi_2,[0.01 zmax 0.01 pmax],'--r'); % график функции V1
     warning('on')
-
 end                
 %-------------------------------------------------------------
-function [X,P] = PIsystem(T,x0,pT,ud)
+function [X,P] = PIsystem(T,x0,p0,ud)
     ud = [ud ud(end)];
     u = @(t) ud(floor(t/DT)+1);
     sys_z = @(t,z) u(t)*(z+gamma) - nu*z;
@@ -182,7 +178,7 @@ function [X,P] = PIsystem(T,x0,pT,ud)
     X = deval(sol_z,T);
     
     sys_p = @(t,p) (rho+nu-u(t))*p - kappa/deval(sol_z,t);
-    sol_p = ode45(sys_p, flip(T), pT, odeopt);
+    sol_p = ode45(sys_p, flip(T), 0, odeopt);
     P = deval(sol_p,T);
 
 end
