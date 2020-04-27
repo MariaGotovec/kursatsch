@@ -1,9 +1,9 @@
-\chapter{ПРИМЕНЕНИЕ EMPC К РЕШЕНИЮ ЗАДАЧ ОБ ОПТИМАЛЬНОМ РОСТЕ ТЕХНОЛОГИЧЕСКОГО ПОСЛЕДОВАТЕЛЯ}\label{chap4}
+\chapter{ПРИМЕНЕНИЕ EMPC К РЕШЕНИЮ ЗАДАЧ И ОБ ОПТИМАЛЬНОМ РОСТЕ ТЕХНОЛОГИЧЕСКОГО ПОСЛЕДОВАТЕЛЯ}\label{chap4}
 
-В настоящей главе применим метод EMPC к решению задачи об оптимальном росте технологического  последователя. При этом рассмотрим три подхода:
+В настоящей главе применим метод EMPC к решению задачи об оптимальном росте технологического  последователя из главы 3. При этом рассмотрим три подхода:
 \begin{enumerate}
-  \item базовый EMPC без дополнительных ограничений(неограниченный EMPC)\cite{Grune};
-  \item EPMC с терминальным ограничением-равенством;
+  \item базовый EMPC без дополнительных ограничений (неограниченный EMPC)\cite{Grune};
+  \item EPMC с терминальным ограничением-равенством [x];
   \item подход, в котором критерий качества дополняется специальной выбранной терминальной стоимостью.
 \end{enumerate}
 Последний подход --- новый, предлагается в данной работе впервые. Цель --- упростить задачу оптимального управления с точки зрения численного решения, поскольку задачи без жестких ограничений-равенств проще с вычислительной точки зрения. В главе проводится сравнение решений, полученных всеми тремя подходами, а также сравнение с решением задачи (\ref{redzou}) на основе Принципа максимума из главы \ref{chap2}.
@@ -36,16 +36,16 @@ $$
     \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t),
 \end{equation}
 $$
-z(\tau) = \frac{x(\tau)}{y(\tau)}, \ z(\tau+T)=\frac{x_1}{y_1},
+z(\tau) = \frac{x(\tau)}{y(\tau)}, \ z(\tau+T)=z_1,
 $$
 $$
     u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T],
     $$
-т.е. добавим требование, чтобы $z$ к моменту $\tau + T$ равнялась магистральному значению. Однако, вычислительные трудности не исчезают, может возникнуть ситуация, когда не существует ни одного допустимого управления, переводящего систему в состояние $x_1/y_1$.
+т.е. добавим $z_1=\frac{x_1}{y_1}$ требование, чтобы $z$ к моменту $\tau + T$ равнялась магистральному значению. Однако, вычислительные трудности не исчезают, может возникнуть ситуация, когда не существует ни одного допустимого управления, переводящего систему в состояние $z_1$.
 
 3) В подходе, предлагаемом в данной дипломной работе дополним критерий качества задачи (\ref{41})  специально подобранной линейной (по фазовой переменной $z$) терминальной стоимостью:
 $$
-    I_3(z,u) =e^{-\rho(\tau+T) }\psi_s z(\tau+T) + \int_t^{t+T} e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max,
+    I_3(z,u) =\alpha e^{-\rho(\tau+T) } z(\tau+T) + \int_t^{t+T} e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max,
     $$
 \begin{equation}\label{43}
     \dot{z}(t)=u(t)(z(t)+\gamma) - \nu z(t), \
@@ -56,7 +56,7 @@ $$
 $$
     u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T],
     $$
-где $\psi_s$ --- весовой коэффициент, выбор которого будет обоснован
+где $\alpha$ --- весовой коэффициент, выбор которого будет обоснован ниже.
 
 \bigskip
 
@@ -68,19 +68,52 @@ $$
 
 Прогнозирующие задачи будут решаться численно с применением метода DSS из раздела 1.3, поэтому дальнейшее изложение будет посвящено программной реализации численных методов для решения задач (\ref{41}), (\ref{42}), (\ref{43}).
 
-Приведем реализацию в Matlab использованием CasADi для са
-мой простой задачи, коей является (\ref{41}).
-Для начала объявим переменные и уравнения, с которыми будем работать:
+Приведем реализацию в Matlab использованием CasADi для самой простой задачи, коей является (\ref{41}).
+Для начала зададим начальные условия:
 \begin{lstlisting}
-z1 = SX.sym('z1');
+y0=1;
+x0=0.1;
+z0 = x0/y0;
+\end{lstlisting}
+Находим $z_1$, $p_1$ и проверяем какому случаю из таблицы \ref{tbll} соответствует задача с выбранными параметрами для этого создали функцию SteadyState. В ней мы находим $\beta_0,$ $\beta_1,$ $\beta_2$ и $z_1$:
+\begin{lstlisting}
+function [z_1,p_1] = SteadyState
+    beta0 = rho + nu - b;
+    beta1 = rho + nu - kappa*b;
+    beta2 = rho + kappa*nu - kappa*b;
+
+    if (beta0>0)  && (beta1>0) && (beta2>0) && (nu<b)
+        fprintf('A1B1C1\n');
+    end
+    if (beta0>0)  && (beta1<=0) && (beta2>0) && (nu<b)
+        fprintf('A1B1C2\n');
+    end
+    if (beta0>0)  && (beta1>0) && (beta2>0) && (nu>=b)
+        fprintf('A1B1C3\n');
+    end
+    if (beta0>0)  && (beta1<=0) && (beta2>0) && (nu>=b)
+        fprintf('A1B1C4\n');
+    end
+    if (beta0<0)  && (beta1>0) && (beta2>0)
+        fprintf('A1B1C7\n');
+    end
+    sol = fsolve(@(x) [phi_1(x(1),x(2));
+     phi_2(x(1),x(2))], [1;1]);
+    z_1 = sol(1); p_1 = sol(2);
+
+\end{lstlisting}
+Объявим переменные и параметры модели, с которыми будем работать:
+\begin{lstlisting}
+ Переменные и параметры модели
 t = SX.sym('t');
+x1 = SX.sym('x1');
 u = SX.sym('u');
 
-zdot = [(z1 + gamma)*u - nu*z1];
+xdot = (x1 + gamma)*u - nu*x1;
 
 \end{lstlisting}
 
-Подинтегральная функция критерия качества:
+Подинтегральная функция критерия качества, так как у нас задача на максимум, а а встроенный алгоритм решает задачи на минимум в подынтегральную функцию возьмем с минусом:
 \begin{lstlisting}
 f0 = -exp(-rho*t)*(kappa*log(z1)+log(b-u));
 \end{lstlisting}
@@ -88,77 +121,105 @@ f0 = -exp(-rho*t)*(kappa*log(z1)+log(b-u));
 Применим алгоритм Рунге-Кутты четвертого порядка для решения ОДУ:
 
 \begin{lstlisting}
-M = 4;
-DT = T/N/M;
-f = Function('f', {z1, u, t}, {zdot, f0});
-X0 = MX.sym('X0', 1);
-U = MX.sym('U');
-tt = MX.sym('tt');
-X = X0;
-Q = 0;
-for j=1:M
-   [k1, k1_q] = f(X, U, tt);
-   [k2, k2_q] = f(X + DT/2 * k1, U, tt+DT/2);
-   [k3, k3_q] = f(X + DT/2 * k2, U,tt+DT/2);
-   [k4, k4_q] = f(X + DT * k3, U,tt+DT);
-   X=X+DT/6*(k1 +2*k2 +2*k3 +k4);
-   Q = Q + DT/6*(k1_q + 2*k2_q + 2*k3_q + k4_q);
-end
-F = Function('F', {X0, U, tt}, {X, Q},
+  DT = T/N;
+   f = Function('f', {x1, u, t}, {xdot, f0});
+   X0 = MX.sym('X0', n);
+   U = MX.sym('U');
+   tt = MX.sym('tt');
+   X = X0;
+   Q = 0;
+       [k1, k1_q] = f(X, U, tt);
+       [k2, k2_q] = f(X + DT/2 * k1, U, tt+DT/2);
+       [k3, k3_q] = f(X + DT/2 * k2, U,tt+DT/2);
+       [k4, k4_q] = f(X + DT * k3, U,tt+DT);
+       X=X+DT/6*(k1 +2*k2 +2*k3 +k4);
+       Q = Q + DT/6*(k1_q + 2*k2_q + 2*k3_q + k4_q);
+
+    F = Function('F', {X0, U, tt}, {X, Q},
      {'x0','p','t'}, {'xf', 'qf'});
+
 \end{lstlisting}
-
-В цикле по $k$ от 0 до N-1:
-\begin{itemize}
-  \item создаем переменную управления и задаем её ограничения;
-
+Собираем переменные и ограничения задачи (\ref{41}):
   \begin{lstlisting}
-    Uk = MX.sym(['U_' num2str(k)]);
-    w = {w{:}, Uk};
-    lbw = [lbw, 0];
-    ubw = [ubw,  b-epslonn];
-    w0 = [w0,  0];
+    u = MX.sym('u',N);
+    z = MX.sym('z',n);
+    J = 0;
+    G = [];
+    x = z;
+    for k = 1:N
+        res = F('x0', x, 'p', u(k), 't', (k-1)*DT);
+        x   = res.xf;
+         J   = J + res.qf;
+        \end{lstlisting}
+Для решения (\ref{42}) здесь добавляется:
+\begin{lstlisting}
+        g  = x-z_1;
+        \end{lstlisting}
+Для решения (\ref{43}) здесь добавляется:
+  \begin{lstlisting}
+        if k==N
+            J=J-exp(-rho*T)*p_1*x;
+        end
+    end
 \end{lstlisting}
-  \item интегрируем на конце интервала;
-
-  \begin{lstlisting}
-    Fk = F('x0',Xk,'p', Uk);
-    Xk = Fk.xf;
-    J = J+Fk.qf;
-\end{lstlisting}
-  \item добавим ограничения неравенства.
-
-  \begin{lstlisting}
-    g = {g{:}, Xk(1)};
-    lbg = [lbg; 0];
-    ubg = [ubg;  inf];
-\end{lstlisting}
-
-Для того чтобы решить (\ref{42}) необходимо добавить:
-  \begin{lstlisting}
-
-    lbg(N) = [xs/ys];
-    ubg(N) = [xs/ys];
-\end{lstlisting}
-\end{itemize}
-Для решения (\ref{42}) нужно добавить после данного блока(не уверена что это так, но других идей нет)
-  \begin{lstlisting}
-    J=J-exp(-rho*T)*psis*z(N)
-      \end{lstlisting}
 
 После формулировки задачи нелинейного программирования и ограничений, для решения задачи создается solver --- процедура решения, в данном случае -- на основе встроенного алгоритма IPOPT.
 
 \begin{lstlisting}
-
-nlp = struct('f', J, 'x', w{:}', 'g', g{:}');
+nlp = struct('f', J, 'x', [z(:); u(:)], 'g', []);
 solver = nlpsol('solver', 'ipopt', nlp);
-Затем solver вызывается с задаными параметрами и
-восстанавливается решение задачи:
-sol = solver('x0', w0, 'lbx', lbw, 'ubx', ubw, ...
-             'lbg', lbg, 'ubg', ubg);
-w_opt = full(sol.x);
 
+lbw = zeros(N,r);
+ubw = (b-eps)*ones(N,r);
+w0 = zeros(N,r);
+
+xtau = z0;
+tic
+sol = solver('x0', [xtau; w0],  'lbg', [], 'ubg', [],...
+             'lbx', [xtau; lbw], 'ubx', [xtau; ubw]);
+t_Elapsed = toc;
 \end{lstlisting}
+Восстанавливаем  управление:
+\begin{lstlisting}
+J_opt = full(sol.f);
+primal = full(sol.x);
+u_opt = reshape(primal(n+1:end), r, N);
+\end{lstlisting}
+Для восстановление двойственных переменных будет с помощью пи-системы:
+\begin{lstlisting}
+function [X,P] = PIsystem(T,x0,pT,ud)
+    ud = [ud ud(end)];
+    u = @(t) ud(floor(t/DT)+1);
+    sys_z = @(t,z) u(t)*(z+gamma) - nu*z;
+    sol_z = ode45(sys_z, T, x0, odeopt);
+    X = deval(sol_z,T);
+
+    sys_p = @(t,p) (rho+nu-u(t))*p - kappa/deval(sol_z,t);
+    sol_p = ode45(sys_p, flip(T), pT, odeopt);
+    P = deval(sol_p,T);
+end
+\end{lstlisting}
+Для восстановления двойственных переменных задачи (\ref{41}) передаем следующие параметры:
+\begin{lstlisting}
+[x_opt, p_opt] = PIsystem(0:DT:T, xtau, 0, u_opt);
+\end{lstlisting}
+
+Для задачи (\ref{42}) параметры для восстановления двойственных переменных выглядеть следующим образом:
+\begin{lstlisting}
+dual = exp(rho*DT*N)*abs(full(sol.lam_g));
+[x_opt, p_opt] = PIsystem(0:DT:T, xtau, dual, u_opt);
+\end{lstlisting}
+
+Для восстановления двойственных переменных задачи (\ref{43}) передаем следующие параметры:
+\begin{lstlisting}
+[x_opt, p_opt] = PIsystem(0:DT:T, xtau, p_1, u_opt);
+\end{lstlisting}
+
+Для вывода результата была написала функция results которая выводит графики:
+\begin{lstlisting}
+results(0:DT:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
+\end{lstlisting}
+
 
 В следующем разделе рассмотрим результаты работы приведенной реализаций.
 
@@ -187,15 +248,12 @@ $\nu = 0.7$,
 $b=0.7$,
 $\rho = 0.1$,
 $\kappa = 1.3.$, с начальной точкой $z_0=0.1$.
-
-Для данного набора: $\beta_0 = 0.1, \ \beta_1 = -0.11,\ \beta_2 = 0.1,$ $\nu = b$, такой набор параметров соответствует случаю А1В1С4 из таблицы \ref{tbll} (решение изображено на рисунке \ref{fig:sl1}).
-
-На рисунке изображены графики:
+Для данного набора: $\beta_0 = 0.1, \ \beta_1 = -0.11,\ \beta_2 = 0.1,$ $\nu = b$, такой набор параметров соответствует случаю А1В1С4 из таблицы \ref{tbll}.На рисунке \ref{fig:sl1} изображены графики:
 \begin{itemize}
   \item график оптимального управления;
   \item график оптимальной траектории;
   \item график оптимальной котраектории;
-  \item график фазового портрета. На графике фазового портрета: серая область --- множество $\Gamma_2$ на котором оптимальное управление равно 0, красные кривые --- это особые направления, точка их пересечения особая точка ($z_1,p_1)$ (магистраль).
+  \item график фазового портрета. На графике фазового портрета: серая область --- множество $\Gamma_2$ на котором оптимальное управление равно 0, красные штриховые кривые --- это особые направления, точка их пересечения особая точка ($z_1,p_1)$ (магистраль).
 \end{itemize}
 
 \begin{figure}
@@ -437,10 +495,10 @@ $\kappa = 0.5$, с начальной точкой $z_0=0.1$.
 \label{fig:sl82}
 
 \end{figure}
-\begin{figure}[!h!]
+\begin{figure}
 
 \centering
-\includegraphics[width=1\linewidth]{62.png}
+\includegraphics[width=0.9\linewidth]{62.png}
 \caption{А1В1С7}
 \label{fig:sl62}
 
@@ -519,7 +577,7 @@ $\kappa = 0.5$, с начальной точкой $z_0=0.1$.
 \begin{figure}
 
 \centering
-\includegraphics[width=0.9\linewidth]{23.png}
+\includegraphics[width=1\linewidth]{23.png}
 \caption{А1В1С3, $\nu> b$}
 \label{fig:sl23}
 
@@ -574,23 +632,23 @@ $\kappa = 0.5$, с начальной точкой $z_0=0.1$.
   \item $\kappa = 0.5$,
   \item с начальной точкой $z_0=0.1$.
 \end{itemize}
-Из рисунки (\ref{fig:f1})---(\ref{fig:f3}).
+Из рисунков (\ref{fig:f1})---(\ref{fig:f3}) можем заметить, что при решении задач (\ref{42}), (\ref{43}) решения получаются ближе к магистрали.
 
 \begin{figure}[!h!]
 \begin{center}
-\begin{minipage}[h]{0.3\linewidth}
+\begin{minipage}[h]{0.32\linewidth}
 \includegraphics[width=1\linewidth]{f41.png}
 \caption{Фазовый портрет (\ref{41})}
 \label{fig:f1} %% метка рисунка для ссылки на него
 \end{minipage}
 \hfill
-\begin{minipage}[h]{0.3\linewidth}
+\begin{minipage}[h]{0.32\linewidth}
 \includegraphics[width=1\linewidth]{f42.png}
 \caption{Фазовый портрет (\ref{42})}
 \label{fig:f2}
 \end{minipage}
 \hfill
-\begin{minipage}[h]{0.3\linewidth}
+\begin{minipage}[h]{0.32\linewidth}
 \includegraphics[width=1\linewidth]{f43.png}
 \caption{Фазовые портрет (\ref{43})}
 \label{fig:f3}
@@ -599,12 +657,11 @@ $\kappa = 0.5$, с начальной точкой $z_0=0.1$.
 \end{figure}
 
 
+\section{Реализация алгоритма EМРС}
 
-\section{Оптимальное программное решение с применением алгоритма МРС}
+Реализуем алгоритм EMPC для задач (\ref{41})-(\ref{43}), с использованием Direct Single Shooting из предыдущего раздела.
 
-Реализуем алгоритм MPC для задачи (\ref{41})-(\ref{43}), с использованием Direct Single Shooting из предыдущего раздела.
-
-В данной реализации $xtau$ состояние системы в измеряемый момент времени, $w0$ начальное приближение. Решаем систему для $tau \in [t0, T]$:
+В данной реализации $xtau$ --- состояние системы в измеряемый момент времени, $w0$ --- начальное приближение:
 
 \begin{lstlisting}
 for tau = t0:Nmpc
