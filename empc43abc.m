@@ -109,7 +109,7 @@ xtau = z0;
 z_opt = z0;
 w0 =  zeros(N,r);
 Uz = [];
-XX = nan*zeros(N,Nmpc+N+2);
+XX = nan*zeros(Nmpc,Nmpc+N+2);
 tic
 for tau = 0:Nmpc
 
@@ -123,10 +123,8 @@ for tau = 0:Nmpc
     % âûäåëèòü ğåøåíèå
     J_opt = full(sol.f);
     
-        if tau>0   && tau <N
-     
+        if tau>0   && tau <Nmpc && mod(tau,10)==0     
         [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, p_s, u_opt);
-   
         end
     % íàéòè ñëåäóşùåå ñîñòîÿíèå
     res = F('x0', xtau, 'p', u_opt(1),'t', T/N);
@@ -143,12 +141,13 @@ u_opt = Uz;
 x_opt = z_opt; 
 XX(1,1:Nmpc+2)=x_opt;  
 
-p_opt = mpcPIsystem(0:T/Nmpc:T,0,x_opt,u_opt);
+%p_opt = mpcPIsystem(0:T/Nmpc:T,0,x_opt,u_opt);
 % 
 % resultF(0:T/Nmpc:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
 % 
 % [z_s, p_s] = SteadyState;
-results2(0:T/Nmpc:T, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
+results2(0:(T+Nmpc)/(N+Nmpc):T+Nmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
+
 
 
 %-------------------------------------------------------------
@@ -286,11 +285,11 @@ function results(T, X, U, Psi, J_opt, time, fNum)
     
 end
 function results2(T, X, U,xx, J_opt, time, fNum)
-    fprintf('   k  |      u        x       \n');
-    fprintf('----------------------------------------\n');
-    for k = 1:length(T)-1
-        fprintf(' %3.1f  | %+11.6f %+11.6f \n', T(k), U(k), X(k));
-    end
+%    fprintf('   k  |      u        x       \n');
+%    fprintf('----------------------------------------\n');
+%     for k = 1:length(T)-1-Nmpc
+%         fprintf(' %3.1f  | %+11.6f %+11.6f \n', T(k), U(k), X(k));
+%     end
     fprintf('Òåğìèí.ñîñòîÿíèå  = %+11.6f \n\n', X(1,end));
     fprintf('Îïòèì. çíà÷åíèå   = %6.4f \n\n', J_opt);
     fprintf('Âğåìÿ ğåøåíèÿ     = %6.4f \n\n', time);
@@ -299,71 +298,27 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     set(fig,'Position', [0    40   1200   300]);
 
     subplot(1,3,1); hold on; grid on; 
-    plot([T nan], X , '-b', 'Linewidth', 1)
-    for k = 2:10:N
-        plot([T nan*zeros(1,N+1)], xx(k,:), '--b', 'Linewidth', 1)
+    plot(T, [X nan*zeros(1,N-1)], '-b', 'Linewidth', 1)
+    for k = 2:Nmpc
+        plot([T nan], xx(k,:), '--b', 'Linewidth', 1)
     end
     xlabel('t')
     ylabel('z')
     title('a)')
     
     subplot(1,3,2); hold on; grid on;
-    stairs(T,U, '--b', 'Linewidth', 1);
+    stairs(T,[U nan*zeros(1,N)], '--b', 'Linewidth', 1);
     ylim([0,b-eps])
     xlabel('t')
     ylabel('u')
     title('á)')
     
     subplot(1,3,3); hold on; grid on; 
-    plot([T nan], X , '-b', 'Linewidth', 1)
+    plot(T , [X nan*zeros(1,N-1)] , '-b', 'Linewidth', 1)
     xlabel('t')
     ylabel('z')
     title('â)')
 
 end
-
-function P = mpcPIsystem(T,p0,xd,ud)
-    ud = [ud ud(end)];
-    u = @(t) ud(floor(t/DT)+1);
-    xd = [xd xd(end)];
-    xm = @(t) xd(floor(t/DT)+1);
-    sys_p = @(t,p) (rho+nu-u(t))*p - kappa/xm(t);
-    sol_p = ode45(sys_p, flip(T), 0, odeopt);
-    P = deval(sol_p,T);
-
-end
-function resultF(T, X, U, Psi, J_opt, time, fNum)
-    fprintf('   k  |      u        x        psi      \n');
-    fprintf('----------------------------------------\n');
-    for k = 1:length(T)-1
-        fprintf(' %3.1f  | %+11.6f %+11.6f %+11.6f \n', T(k), U(k), X(k), Psi(k));
-    end
-    fprintf('Òåğìèí.ñîñòîÿíèå  = %+11.6f \n\n', X(1,end));
-    fprintf('Îïòèì. çíà÷åíèå   = %6.4f \n\n', J_opt);
-    fprintf('Âğåìÿ ğåøåíèÿ     = %6.4f \n\n', time);
-
-    fig = figure(fNum);
-    set(fig,'Position', [200    40   400   400]);
-   
-    subplot(1,1,1); hold on; grid on; 
-    % âñïîìîãàòåëüíûå ïîñòğîåíèÿ
-    warning('off')
-    H = [];
-    for zi = 0:0.01:zmax
-        H = [H h(zi)];
-    end
-    plot(0:0.01:zmax,H,'k'); % ãğàôèê ôóíêöèè h(z)
-    fill([0 0:0.01:zmax zmax], [0 H 0],[0.9 0.9 0.9]);
-        
-    fimplicit( @phi_1,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
-    fimplicit( @phi_2,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
-    warning('on')
-    % ôàçîâûé ïîğòğåò
-    plot(X, [Psi nan], '-b', 'Linewidth', 1)
-    xlabel('z')
-    ylabel('p')
-    
-end
-
 
 end

@@ -99,7 +99,7 @@ xtau = z0;
 z_opt = z0;
 w0 =  zeros(N,r);
 Uz = [];
-XX = nan*zeros(N,Nmpc+N+2);
+XX = nan*zeros(Nmpc,Nmpc+N+2);
 tic
 for tau = 0:Nmpc
 
@@ -113,11 +113,9 @@ for tau = 0:Nmpc
     % выделить решение
     J_opt = full(sol.f);
     
-        if tau>0   && tau <N
-        dual = exp(rho*DT*N)*abs(full(sol.lam_g));    
-     
-        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, dual, u_opt);
-   
+       if tau>0   && tau <Nmpc && mod(tau,10)==0
+         dual = exp(rho*DT*N)*abs(full(sol.lam_g));      
+        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, dual, u_opt);   
        end
     % найти следующее состояние
     res = F('x0', xtau, 'p', u_opt(1),'t', T/N);
@@ -134,7 +132,8 @@ u_opt = Uz;
 x_opt = z_opt; 
 XX(1,1:Nmpc+2)=x_opt;  
 
-results2(0:T/Nmpc:T, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
+results2(0:(T+Nmpc)/(N+Nmpc):T+Nmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
+
 
 % Восстанавливаем решение: управление и двойственные переменные 
 % J_opt = -full(sol.f);
@@ -279,13 +278,12 @@ function results(T, X, U, Psi, J_opt, time, fNum)
     title('фазовый портрет')
     
 end
-
 function results2(T, X, U,xx, J_opt, time, fNum)
-    fprintf('   k  |      u        x       \n');
-    fprintf('----------------------------------------\n');
-    for k = 1:length(T)-1
-        fprintf(' %3.1f  | %+11.6f %+11.6f \n', T(k), U(k), X(k));
-    end
+%    fprintf('   k  |      u        x       \n');
+%    fprintf('----------------------------------------\n');
+%     for k = 1:length(T)-1-Nmpc
+%         fprintf(' %3.1f  | %+11.6f %+11.6f \n', T(k), U(k), X(k));
+%     end
     fprintf('Термин.состояние  = %+11.6f \n\n', X(1,end));
     fprintf('Оптим. значение   = %6.4f \n\n', J_opt);
     fprintf('Время решения     = %6.4f \n\n', time);
@@ -294,27 +292,26 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     set(fig,'Position', [0    40   1200   300]);
 
     subplot(1,3,1); hold on; grid on; 
-    plot([T nan], X , '-b', 'Linewidth', 1)
-    for k = 2:10:N
-        plot([T nan*zeros(1,N+1)], xx(k,:), '--b', 'Linewidth', 1)
+    plot(T, [X nan*zeros(1,N-1)], '-b', 'Linewidth', 1)
+    for k = 2:Nmpc
+        plot([T nan], xx(k,:), '--b', 'Linewidth', 1)
     end
     xlabel('t')
     ylabel('z')
     title('a)')
     
     subplot(1,3,2); hold on; grid on;
-    stairs(T,U, '--b', 'Linewidth', 1);
+    stairs(T,[U nan*zeros(1,N)], '--b', 'Linewidth', 1);
     ylim([0,b-eps])
     xlabel('t')
     ylabel('u')
     title('б)')
     
     subplot(1,3,3); hold on; grid on; 
-    plot([T nan], X , '-b', 'Linewidth', 1)
+    plot(T , [X nan*zeros(1,N-1)] , '-b', 'Linewidth', 1)
     xlabel('t')
     ylabel('z')
     title('в)')
 
 end
-
 end
