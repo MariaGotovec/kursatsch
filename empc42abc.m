@@ -12,16 +12,16 @@ import casadi.*
 n = 1;
 r = 1;
 
-T = 10;  % горизонт
+T = 20;  % горизонт
 N = 100; % кол-во интервалов квантовани€
 Nmpc = 210;
 
 % ѕараметры задачи ќ”  CASE: 
-gamma = 0.3;
-nu = 0.3;
-b = 0.4;
-rho = 0.14;
-kappa =0.5;
+gamma = 0.1;
+nu = 0.5;
+b = 0.55;
+rho = 0.15;
+kappa =1.5;
 eps = 0;
 pmax = 15;
 zmax = 0.3;
@@ -116,7 +116,7 @@ for tau = 0:Nmpc
         if tau>0   && tau <N
         dual = exp(rho*DT*N)*abs(full(sol.lam_g));    
      
-        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT*3/4:T*3/4, xtau, dual, u_opt);
+        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, dual, u_opt);
    
        end
     % найти следующее состо€ние
@@ -133,6 +133,7 @@ end
 u_opt = Uz;
 x_opt = z_opt; 
 XX(1,1:Nmpc+2)=x_opt;  
+
 results2(0:T/Nmpc:T, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
 
 % ¬осстанавливаем решение: управление и двойственные переменные 
@@ -297,7 +298,6 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     for k = 2:10:N
         plot([T nan*zeros(1,N+1)], xx(k,:), '--b', 'Linewidth', 1)
     end
-    xlim([0,15])
     xlabel('t')
     ylabel('z')
     title('a)')

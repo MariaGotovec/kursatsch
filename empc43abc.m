@@ -13,20 +13,19 @@ import casadi.*
 n = 1;
 r = 1;
 
-T = 10;  % ãîğèçîíò
+T = 20;  % ãîğèçîíò
 N = 100; % êîë-âî èíòåğâàëîâ êâàíòîâàíèÿ
 Nmpc = 210;
 
 % Ïàğàìåòğû çàäà÷è ÎÓ  CASE: 
-gamma = 0.3;
-nu = 0.3;
-b = 0.4;
-rho = 0.14;
-kappa =0.5;
+gamma = 0.1;
+nu = 0.5;
+b = 0.55;
+rho = 0.15;
+kappa =1.5;
 eps = 0;
 pmax = 15;
 zmax = 0.3;
-
 
 % Íà÷àëüíûå óñëîâèÿ
 y0=1;
@@ -126,7 +125,7 @@ for tau = 0:Nmpc
     
         if tau>0   && tau <N
      
-        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT*3/4:T*3/4, xtau, p_s, u_opt);
+        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, p_s, u_opt);
    
         end
     % íàéòè ñëåäóşùåå ñîñòîÿíèå
@@ -143,6 +142,12 @@ end
 u_opt = Uz;
 x_opt = z_opt; 
 XX(1,1:Nmpc+2)=x_opt;  
+
+p_opt = mpcPIsystem(0:T/Nmpc:T,0,x_opt,u_opt);
+% 
+% resultF(0:T/Nmpc:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
+% 
+% [z_s, p_s] = SteadyState;
 results2(0:T/Nmpc:T, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
 
 
@@ -298,7 +303,6 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     for k = 2:10:N
         plot([T nan*zeros(1,N+1)], xx(k,:), '--b', 'Linewidth', 1)
     end
-    xlim([0,15])
     xlabel('t')
     ylabel('z')
     title('a)')
@@ -317,5 +321,49 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     title('â)')
 
 end
+
+function P = mpcPIsystem(T,p0,xd,ud)
+    ud = [ud ud(end)];
+    u = @(t) ud(floor(t/DT)+1);
+    xd = [xd xd(end)];
+    xm = @(t) xd(floor(t/DT)+1);
+    sys_p = @(t,p) (rho+nu-u(t))*p - kappa/xm(t);
+    sol_p = ode45(sys_p, flip(T), 0, odeopt);
+    P = deval(sol_p,T);
+
+end
+function resultF(T, X, U, Psi, J_opt, time, fNum)
+    fprintf('   k  |      u        x        psi      \n');
+    fprintf('----------------------------------------\n');
+    for k = 1:length(T)-1
+        fprintf(' %3.1f  | %+11.6f %+11.6f %+11.6f \n', T(k), U(k), X(k), Psi(k));
+    end
+    fprintf('Òåğìèí.ñîñòîÿíèå  = %+11.6f \n\n', X(1,end));
+    fprintf('Îïòèì. çíà÷åíèå   = %6.4f \n\n', J_opt);
+    fprintf('Âğåìÿ ğåøåíèÿ     = %6.4f \n\n', time);
+
+    fig = figure(fNum);
+    set(fig,'Position', [200    40   400   400]);
+   
+    subplot(1,1,1); hold on; grid on; 
+    % âñïîìîãàòåëüíûå ïîñòğîåíèÿ
+    warning('off')
+    H = [];
+    for zi = 0:0.01:zmax
+        H = [H h(zi)];
+    end
+    plot(0:0.01:zmax,H,'k'); % ãğàôèê ôóíêöèè h(z)
+    fill([0 0:0.01:zmax zmax], [0 H 0],[0.9 0.9 0.9]);
+        
+    fimplicit( @phi_1,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
+    fimplicit( @phi_2,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
+    warning('on')
+    % ôàçîâûé ïîğòğåò
+    plot(X, [Psi nan], '-b', 'Linewidth', 1)
+    xlabel('z')
+    ylabel('p')
+    
+end
+
 
 end
