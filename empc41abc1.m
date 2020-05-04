@@ -116,7 +116,7 @@ for tau = t0:DT:Tmpc
     
     sol = solver('x0', [xtau; w0],  'lbg', [], 'ubg', [],...
              'lbx', [xtau; lbw], 'ubx', [xtau; ubw]);
-    t_Elapsed = toc;   
+     
     xu = full(sol.x);
     u_opt = reshape(xu(n+1:end), r, N);
     % выделить решение
@@ -145,6 +145,7 @@ XX(1,1:Nmpc+2)=x_opt;
 % resultF(0:T/Nmpc:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
 % 
 % [z_s, p_s] = SteadyState;
+t_Elapsed = toc;  
 results2(0:(T+Tmpc)/(N+Nmpc):T+Tmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1,p_opt)
 %-------------------------------------------------------------
 % FUNCTIONS

@@ -12,9 +12,9 @@ import casadi.*
 n = 1;
 r = 1;
 
-T = 20;  % горизонт
-N = 100; % кол-во интервалов квантования
-Nmpc = 210;
+T = 10;  % горизонт
+N = 50; % кол-во интервалов квантования
+Nmpc = 200;
 
 % Параметры задачи ОУ  CASE: 
 gamma = 0.1;
@@ -111,7 +111,7 @@ for tau = t0:DT:Tmpc
     
     sol = solver('x0', [xtau; w0],  'lbg', [], 'ubg', [],...
              'lbx', [xtau; lbw], 'ubx', [xtau; ubw]);
-    t_Elapsed = toc;   
+    
     xu = full(sol.x);
     u_opt = reshape(xu(n+1:end), r, N);
     % выделить решение
@@ -136,7 +136,7 @@ end
 u_opt = Uz;
 x_opt = z_opt; 
 XX(1,1:Nmpc+2)=x_opt;  
-
+t_Elapsed = toc;  
 results2(0:(T+Tmpc)/(N+Nmpc):T+Tmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1,p_opt)
 
 
