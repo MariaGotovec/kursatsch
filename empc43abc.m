@@ -24,8 +24,8 @@ b = 0.55;
 rho = 0.15;
 kappa =1.5;
 eps = 0;
-pmax = 15;
-zmax = 0.3;
+pmax = 40;
+zmax = 0.8;
 
 % Íà÷àëüíûå óñëîâèÿ
 y0=1;
@@ -111,7 +111,11 @@ w0 =  zeros(N,r);
 Uz = [];
 XX = nan*zeros(Nmpc,Nmpc+N+2);
 tic
-for tau = 0:Nmpc
+Tmpc=DT*Nmpc;
+t0=0;
+p_opt=[];
+ptau=[nan];
+for tau = t0:DT:Tmpc
 
 % Solve the NLP
     
@@ -123,8 +127,8 @@ for tau = 0:Nmpc
     % âûäåëèòü ğåøåíèå
     J_opt = full(sol.f);
     
-        if tau>0   && tau <Nmpc && mod(tau,10)==0     
-        [XX(tau,tau:N+tau), p_opt] = PIsystem(0:DT:T, xtau, p_s, u_opt);
+        if tau>0   && tau <Tmpc   
+         [XX(fix(tau/DT),fix(tau/DT):N+fix(tau/DT)), ptau] = PIsystem(0:DT:T, xtau, p_s, u_opt);
         end
     % íàéòè ñëåäóşùåå ñîñòîÿíèå
     res = F('x0', xtau, 'p', u_opt(1),'t', T/N);
@@ -132,6 +136,7 @@ for tau = 0:Nmpc
     % çàïîìíèòü òåêóùåå ñîñòîÿíèå
     Uz = [Uz u_opt(1)];
     z_opt = [z_opt xtau];
+    p_opt=[p_opt ptau(1)];
     % ïîäãîòîâèòü ïğèáëèæåíèå
     w0 = [u_opt(2:end) zeros(1)]';
 end       
@@ -146,7 +151,7 @@ XX(1,1:Nmpc+2)=x_opt;
 % resultF(0:T/Nmpc:T, x_opt, u_opt,p_opt, J_opt, t_Elapsed, 1)
 % 
 % [z_s, p_s] = SteadyState;
-results2(0:(T+Nmpc)/(N+Nmpc):T+Nmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1)
+results2(0:(T+Tmpc)/(N+Nmpc):T+Tmpc, x_opt,u_opt, XX , J_opt, t_Elapsed, 1,p_opt)
 
 
 
@@ -284,7 +289,7 @@ function results(T, X, U, Psi, J_opt, time, fNum)
     title('ôàçîâûé ïîğòğåò')
     
 end
-function results2(T, X, U,xx, J_opt, time, fNum)
+function results2(T, X, U,xx, J_opt, time, fNum,Psi)
 %    fprintf('   k  |      u        x       \n');
 %    fprintf('----------------------------------------\n');
 %     for k = 1:length(T)-1-Nmpc
@@ -298,8 +303,8 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     set(fig,'Position', [0    40   1200   300]);
 
     subplot(1,3,1); hold on; grid on; 
-    plot(T, [X nan*zeros(1,N-1)], '-b', 'Linewidth', 1)
-    for k = 2:Nmpc
+    plot([T nan], xx(1,:), '-b', 'Linewidth', 1)
+    for k = 2:4:Nmpc
         plot([T nan], xx(k,:), '--b', 'Linewidth', 1)
     end
     xlabel('t')
@@ -314,9 +319,20 @@ function results2(T, X, U,xx, J_opt, time, fNum)
     title('á)')
     
     subplot(1,3,3); hold on; grid on; 
-    plot(T , [X nan*zeros(1,N-1)] , '-b', 'Linewidth', 1)
-    xlabel('t')
-    ylabel('z')
+        warning('off')
+    H = [];
+    for zi = 0:0.01:zmax
+        H = [H h(zi)];
+    end 
+    plot(0:0.01:zmax,H,'k'); % ãğàôèê ôóíêöèè h(z)
+    fill([0 0:0.01:zmax zmax], [0 H 0],[0.9 0.9 0.9]);
+        
+    fimplicit( @phi_1,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
+    fimplicit( @phi_2,[0.01 zmax 0.01 pmax],'--r'); % ãğàôèê ôóíêöèè V1
+    warning('on')
+    % ôàçîâûé ïîğòğåò
+    plot(X, [Psi nan], '-b', 'Linewidth', 1)
+    xlabel('z')
     title('â)')
 
 end
