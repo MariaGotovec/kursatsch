@@ -1,0 +1,318 @@
+\documentclass[notheorems]{beamer}
+\usepackage[cp1251]{inputenc}
+\usepackage{SlideStyle}
+
+
+\titlegraphic{\vspace*{-7cm}
+    \parbox[c]{3cm}{\includegraphics[height=.7cm]{bsulogo}}
+    \hspace*{1cm}%
+    \parbox[c]{2cm}{\includegraphics[height=1.5cm]{FPMIlogo}}
+    \hspace*{1cm}%
+    \parbox[c]{3cm}{\includegraphics[height=.7cm]{MOUlogo}}
+    \vspace*{3cm}
+}
+
+\title[]{\Large ОПТИМАЛЬНОЕ УПРАВЛЕНИЕ И УПРАВЛЕНИЕ\\ПО ПРОГНОЗИРУЮЩЕЙ МОДЕЛИ ДЛЯ ЗАДАЧИ\\РОСТА ТЕХНОЛОГИЧЕСКОГО ПОСЛЕДОВАТЕЛЯ}
+
+
+\author[М.А. Готовец]{Готовец Мария Алексеевна}
+
+
+
+\institute[ФПМИ, БГУ]{}
+
+
+\date[Диплом, 2020]{}%{\scriptsize \structure{2017-2018}}
+
+
+\begin{document}
+
+\maketitle
+
+%--------------------------------------------------------------------------------------
+\begin{frame}{Цели работы}
+
+\begin{itemize}
+
+\item  \vfill
+
+\item \vfill
+
+
+
+
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Задача оптимального роста \\ технологического последователя}
+
+\begin{block}{}
+      $$
+    J(x,u)=\int_0^\infty e^{-\rho t} [\kappa  ln x(t)+ln(b - u(t))]dt \rightarrow \max,
+    $$
+    $$
+    \dot{x}(t) = u(t)(x(t) + \gamma y(t)),
+    $$
+    $$
+    x(0) = x_0,
+    $$
+    $$
+    \dot{y}(t) = \nu y(t), $$
+    $$ y(0) = y_0, \ u(t) \in [0, b-\varepsilon],
+    $$
+    \end{block}
+
+где $b, \ \gamma , \ \rho , \ \nu ,  \ \kappa$ --- положительные параметры, $\gamma < 1$; $x_0$ и $y_0$ --- положительные начальные состояния.
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Редуцированная задача}
+$$z(t)=\frac{x(t)}{y(t)}, \ t \geq 0, \  z_0=\frac{x_0}{y_0}.$$
+\begin{block}
+
+$$
+    I(z,u) = \int_0^\infty e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt \to \max, $$
+$$
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ z(0) = z_0,
+$$
+$$
+    u(t) \in [0,b-\varepsilon], \ t\ge 0.
+    $$
+\end{block}
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Решение редуцированной задачи}
+Фазовые траектории решений гамильтоновой системы в неособых невырожденных случаях.
+$p(t)=e^{\rho t}\psi(t)$ - сопряженная переменная.
+\begin{figure}[!h!]
+
+\centering
+\includegraphics[width=0.5\linewidth]{nv.png}
+
+
+
+\end{figure}
+
+\end{frame}
+%
+%\begin{frame}
+%
+%\begin{block}{Прогнозирующая задача оптимального управления}
+%$$
+%{\cal P} (t, x_{t}, T) = \int^{t+T}_t L(x(s),u(s), s)ds + W(t+T,x(t+T)),
+%$$
+%при условиях
+%$$
+%    \dot{x}(s)=f(x(s),u(s), s),\   x(t)=x_t,
+%    $$
+%$$
+%    u(s) \in U(s), \ s\in [t,t+T],
+%    $$
+%$$
+%    x(t+T) \in S,
+%    $$
+%\end{block}
+%
+%\begin{enumerate}
+%  \item горизонт управления $T$;
+%  \item функции текущей и конечной (терминальной) стоимостей $L$ и $W$;
+%  \item терминальное множество $S \subset \R^n$.
+%\end{enumerate}
+%
+%\end{frame}
+
+\begin{frame}
+\begin{block}{Прогнозирующая задача оптимального управления}
+$$
+{\cal P} (t, x_{t}, T) = \int^{t+T}_t L(x(s),u(s), s)ds + W(t+T,x(t+T)),
+$$
+$$
+    \dot{x}(s)=f(x(s),u(s), s),\   x(t)=x_t,
+    $$
+$$
+    u(s) \in U(s), \ s\in [t,t+T],
+    $$
+$$
+    x(t+T) \in S,
+    $$
+\end{block}
+{Алгоритм MPC}
+\begin{enumerate}
+ \item Измерить текущего состояния объекта $x_{t_i}$.
+  \item Вычисляется оптимального (программного) управления $u^0(t)$, $t\in [t_i , t_{i} + T]$, --- задачи ${\cal P} (t_i , x_{t_i} ,T)$.
+  \item Управление $u^* (t): = u^0(t)$ при  $t\in [t_i , t_{i}+\delta]$ подается на вход объекта управления.
+  \item Процедура повторяется для следующего момента $t_{i+1}$.
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Подход 1: Прогнозирующая задача \\ для неограниченного EMPC}
+\begin{block}
+
+
+$$ I_1(z,u) = \int_\tau^{\tau+T}e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max,$$
+
+\begin{equation}\label{41}
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \
+\end{equation}
+$$
+    z(\tau) = \frac{x(\tau)}{y(\tau)},
+    $$
+$$
+    u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T].
+    $$
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Подход 2: с терминальным ограничением}
+\begin{block}
+
+$$I_2(z,u) = \int_t^{t+T} e^{-\rho t}[\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max,$$
+\begin{equation}\label{42}
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t),
+\end{equation}
+$$z(\tau) = \frac{x(\tau)}{y(\tau)}, \ z(\tau+T)=z_1,$$
+$$    u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T],  $$
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Подход 3: с терминальной стоимостью}
+\begin{block}
+
+$$
+I_3(z,u) =\alpha e^{-\rho(\tau+T) } z(\tau+T) + \int_t^{t+T} e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max,$$
+\begin{equation}\label{43}
+    \dot{z}(t)=u(t)(z(t)+\gamma) - \nu z(t), \
+\end{equation}
+$$
+    z(\tau) = \frac{x(\tau)}{y(\tau)},
+    $$
+$$
+    u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T],
+    $$
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Подход 1: Прогнозирующая задача \\ для неограниченного EMPC}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.8\linewidth]{3.png}
+
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Подход 2: с терминальным ограничением}
+
+\begin{figure}[!h]
+
+\centering
+\includegraphics[width=0.8\linewidth]{32.png}
+
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Подход 3: с терминальной стоимостью}
+
+\begin{figure}[!h]
+
+\centering
+\includegraphics[width=0.8\linewidth]{33.png}
+
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Сводный график}
+
+\begin{figure}[!h!]
+\begin{center}
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 1}
+\includegraphics[width=1\linewidth]{f41.png}
+
+\label{fig:f1} %% метка рисунка для ссылки на него
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 2}
+\includegraphics[width=1\linewidth]{f42.png}
+
+\label{fig:f2}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 3}
+\includegraphics[width=1\linewidth]{f43.png}
+
+\label{fig:f3}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}{Подход 1: Неограниченный EMPC}
+\begin{figure}[!h!]
+\centering
+\includegraphics[width=1.2\linewidth]{empc41.png}
+\caption{Результаты ЕМРС с прогнозирующей задачей (\ref{41})}
+\label{fig:empc41}
+\end{figure}
+
+
+\end{frame}
+
+\begin{frame}{Подход 2: EMPC с ограничениями-равенствами}
+\begin{figure}[!h!]
+\centering
+\includegraphics[width=1.2\linewidth]{empc42.png}
+\caption{Результаты ЕМРС с прогнозирующей задачей (\ref{41})}
+\label{fig:empc41}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Подход 3: EMPC с терминальной стоимостью}
+
+\begin{figure}[!h!]
+\centering
+\includegraphics[width=1.2\linewidth]{empc43.png}
+\caption{Результаты ЕМРС с прогнозирующей задачей (\ref{41})}
+\label{fig:empc41}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Выводы}
+\begin{block}{Преимущества EMPC с терминальной стоимостью}
+\begin{itemize}
+\item  Простой вариант выбора терминальной стоимости;
+\item  Задача оптимального управления проще с точки зрения численного решения;
+\item Задача проще с вычислительной точки зрения;
+\item Имеет решение при любом горизонте $T$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{ }
+
+\begin{center}
+ \textbf{\Huge  Спасибо за внимание!}
+\end{center}
+
+
+\end{frame}
+
+
+\end{document} 
