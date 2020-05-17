@@ -1,0 +1,504 @@
+\documentclass[notheorems]{beamer}
+\usepackage[cp1251]{inputenc}
+\usepackage{SlideStyle}
+
+
+\titlegraphic{\vspace*{-7cm}
+    \parbox[c]{3cm}{\includegraphics[height=.7cm]{bsulogo}}
+    \hspace*{1cm}%
+    \parbox[c]{2cm}{\includegraphics[height=1.5cm]{FPMIlogo}}
+    \hspace*{1cm}%
+    \parbox[c]{3cm}{\includegraphics[height=.7cm]{MOUlogo}}
+    \vspace*{3cm}
+}
+
+\title[]{\Large ОПТИМАЛЬНОЕ УПРАВЛЕНИЕ И УПРАВЛЕНИЕ\\ПО ПРОГНОЗИРУЮЩЕЙ МОДЕЛИ ДЛЯ ЗАДАЧИ\\РОСТА ТЕХНОЛОГИЧЕСКОГО ПОСЛЕДОВАТЕЛЯ}
+
+
+\author[М.А. Готовец]{Готовец Мария Алексеевна}
+
+
+
+\institute[ФПМИ, БГУ]{}
+
+
+\date[Диплом, 2020]{}%{\scriptsize \structure{2017-2018}}
+
+
+\begin{document}
+
+\maketitle
+
+%--------------------------------------------------------------------------------------
+\begin{frame}{Объект исследования и цели работы}
+
+\begin{itemize}\itemsep = 4mm
+
+\item  \structure{Объект исследования}
+
+\begin{itemize}\itemsep = 3mm
+
+\item Процесс экономического развития страны технологического последователя, заимствующего технологии страны-лидера
+
+\item Задача оптимального управления распределением трудовых ресурсов станы-последователя
+\end{itemize}
+
+
+\item \structure{Цели работы}
+\begin{itemize}\itemsep = 3mm
+\item Проанализировать решение задачи оптимального экономического роста страны-последователя при различных  параметрах
+
+\item Применить методы управления по прогнозирующей модели с целью аппроксимации решения задачи с бесконечным горизонтом  последовательным решением прогнозирующих задач с конечным горизонтом
+
+\item Исследовать  три различных подхода к построению прогнозирующих задач
+
+
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Задача оптимального роста \\ технологического последователя}
+
+\begin{itemize}
+\item $A$ --- страна-лидер, выделяет в исследовательский сектор долю $L^A_N(t)$ трудовых ресурсов
+\item $B$ --- страна-последователь, выделяет в исследовательский сектор долю $L^B_N(t)$ трудовых ресурсов, заимствует технологии у  $A$
+
+\begin{block}{}
+$$
+\int_0^\infty e^{-\rho^Bt} \left \{ \left(\frac{1}{\alpha} - 1\right) \ln N^B(t)+\ln(L^B - L^B_N(t))\right \}dt \rightarrow \max_{L_N^B}
+$$
+$$
+\dot{N}^B(t) = \frac{L^B_N}{a^B}(N^B(t)+\gamma N^A(t)), \ L^B_N(t) \in [0,L^B[
+$$
+$$
+\dot{N}^A(t)=g^AN^A(t)$$
+$$ N^A(0)=N_0^A , \ N^B(0)=N_0^B$$
+\end{block}
+\begin{itemize}
+\item  $g^A, \ L^B, \ a^B, \ \gamma>0$ --- заданные параметры
+
+\item $N_0^A > 0, \ N_0^B > 0$ --- заданные начальные состояния
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Задача оптимального роста \\ технологического последователя}
+
+\begin{itemize}
+\item Замена переменных
+$$
+x(t) = N^B(t), \
+b = \frac{L^B}{a^B}, \
+ u(t) = \frac{L_N^B(t)}{a^B}, \
+\rho = \rho^B$$
+$$
+y(t) = N^A(t), \ \nu=g^A, \
+  \kappa = \frac{1}{\alpha}-1
+$$
+\begin{block}{}
+      $$
+    J(x,u)=\int_0^\infty e^{-\rho t} [\kappa  ln x(t)+ln(b - u(t))]dt \rightarrow \max
+    $$
+    $$
+    \dot{x}(t) = u(t)(x(t) + \gamma y(t))
+    $$
+    $$
+    x(0) = x_0
+    $$
+    $$
+    \dot{y}(t) = \nu y(t) $$
+    $$ y(0) = y_0, \ u(t) \in [0, b-\varepsilon]
+    $$
+    \end{block}
+
+\item $b, \ \gamma , \ \rho , \ \nu ,  \ \kappa$ > 0, $\varepsilon >0$, $\gamma < 1$; $x_0$, $y_0>0$
+
+ \end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Редуцированная задача}
+\begin{itemize}
+\item Замена переменных с целью понижения размерности:
+$$z(t)=\frac{x(t)}{y(t)}, \ t \geq 0, \  z_0=\frac{x_0}{y_0}$$
+\item Редуцированная задача
+\begin{block}
+
+$$
+    I(z,u) = \int_0^\infty e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt \to \max $$
+\begin{equation}
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t), \ z(0) = z_0
+\end{equation}
+$$
+    u(t) \in [0,b-\varepsilon], \ t\ge 0
+    $$
+\end{block}
+$z \in \R$ --- состояние системы, $u \in \R$ ---  управление.
+\item Задача оптимального управления нелинейной системы с критерием Лагранжа.
+\end{itemize}
+\end{frame}
+
+%--------------------------------------------------------------------------
+\begin{frame}{Решение редуцированной задачи}
+
+\begin{minipage}{0.45\textwidth}
+\begin{itemize}
+\item Гамильтонова система:
+ $$\dot{z}(t) =(b-\nu)z(t)+b\gamma-\frac{1}{p(t)}$$
+$$
+\dot{p}(t) =-(b-\nu-\rho)p(t)-\frac{\gamma\kappa+(\kappa+1)z(t)}{z(t)+\gamma)z(t)}
+$$
+% $$(z(t),p(t)) \in \Gamma_1$$
+  \item Уравнения для ($z_1,p_1$):
+  $$
+p=h_{11}(z)
+$$
+$$
+h_{11}(z)=h_{12}(z)
+$$
+$$
+h_{11}(z)=\frac{1}{b\gamma -(\nu -b)z},
+$$
+$$
+h_{12}(z)=\frac{\gamma\kappa+(\kappa-1)z}{\beta_0(z+\gamma)z},
+$$
+\end{itemize}
+
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\textwidth}
+
+\begin{itemize}
+  \item Типичные фазовые траектории решений гамильтоновой системы в неособых невырожденных случаях
+  \end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{nv.png}
+\end{figure}
+
+\end{minipage}
+
+
+
+\end{frame}
+\begin{frame}{Стабилизация нелинейной системы}
+\begin{itemize}
+  \item Модель объекта управления
+  $$
+\dot{x}(s)=f(x(s),u(s),s), \  x(t)=x_t, \ s\geq t
+$$
+  \item Стоимость этапа
+  $$L(x,u)$$
+  \item Полная стоимость процесса (с конечным горизонтом)
+ $$J_T(x_0,u):=\int_0^T L(x(s|x_0,u),u(s))$$
+  
+  \item Задача минимизации полной стоимости на бесконечно горизонте
+  $$J_\infty(x_0,u)\rightarrow \min_u $$
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Управление по прогнозирующей модели}
+\begin{block}{Прогнозирующая задача оптимального управления}
+$$
+{\cal P} (t, x_{t}, T) = \int^{t+T}_t L(x(s),u(s), s)ds + W(t+T,x(t+T))
+$$
+$$
+    \dot{x}(s)=f(x(s),u(s), s),\   x(t)=x_t
+    $$
+$$
+    u(s) \in U(s), \ s\in [t,t+T]
+    $$
+$$
+    x(t+T) \in S
+    $$
+\end{block}
+{Алгоритм MPC}
+\begin{enumerate}
+ \item Измерить текущего состояния объекта $x_{t_i}$.
+  \item Вычисляется оптимального (программного) управления $u^0(t)$, $t\in [t_i , t_{i} + T]$, --- задачи ${\cal P} (t_i , x_{t_i} ,T)$.
+  \item Управление $u^* (t): = u^0(t)$ при  $t\in [t_i , t_{i}+\delta]$ подается на вход объекта управления.
+  \item Процедура повторяется для следующего момента $t_{i+1}$.
+
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Подход 1: Прогнозирующая задача \\ для неограниченного EMPC}
+\begin{itemize}
+  \item  В задаче (1) заменим бесконечный горизонт управления конечным
+  \item Дополнительные условия на правый конец траектории не накладываем
+\end{itemize}
+\begin{block}
+
+$$ I_1(z,u) = \int_\tau^{\textcolor{red}{\tau+T}}e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max$$
+\begin{equation}\label{41}
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t) \
+\end{equation}
+$$
+    z(\tau) = \frac{x(\tau)}{y(\tau)}
+    $$
+$$
+    u(t) \in [0,b-\varepsilon], \ t\in[\tau,\textcolor{red}{\tau+T}]
+    $$
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Подход 2: с терминальным ограничением}
+
+\begin{itemize}
+  \item В прогнозирующую задачу добавим терминальное ограничение-равенство
+  \item Потребуем, чтобы в терминальный момент состояние равнялось магистральному значению $z_1$
+\end{itemize}
+\begin{block}
+
+$$I_2(z,u) = \int_t^{t+T} e^{-\rho t}[\kappa \ln z(t) + \ln (b-u(t))]dt\rightarrow\max $$
+
+\begin{equation}\label{42}
+    \dot{z}(t)=u(t)(z(t)+\gamma)- \nu z(t)
+\end{equation}
+$$z(\tau) = \frac{x(\tau)}{y(\tau)}, \ \textcolor{red}{z(\tau+T)=z_1}$$
+$$u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T] $$
+\end{block}
+
+ \end{frame}
+
+
+\begin{frame}{Подход 3: с терминальной стоимостью}
+
+\begin{itemize}
+  \item В прогнозирующую задачу добавим терминальную стоимость
+  \item В качестве значения параметра $\alpha$ выберем соответствующее магистральное значение $p_1$
+\end{itemize}
+\begin{block}
+
+$$
+I_3(z,u) =\alert{\alpha e^{-\rho(\tau+T) } z(\tau+T)} + \int_t^{t+T} e^{-\rho t} [\kappa  \ln z(t) + \ln (b-u(t))]dt\rightarrow\max$$
+
+\begin{equation}\label{43}
+    \dot{z}(t)=u(t)(z(t)+\gamma) - \nu z(t) \
+\end{equation}
+$$
+    z(\tau) = \frac{x(\tau)}{y(\tau)}
+    $$
+
+$$
+    u(t) \in [0,b-\varepsilon], \ t\in[\tau,\tau+T]
+    $$
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Подход 1: Программное решение}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.7\linewidth]{3.png}
+
+\end{figure}
+\begin{itemize}
+  \item Оптимальные траектории имеют продолжительные промежутки убывания и далеки от магистрали
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Подход 2: Программное решение}
+
+\begin{figure}[!h]
+
+\centering
+\includegraphics[width=0.7\linewidth]{32.png}
+
+\end{figure}
+\begin{itemize}
+  \item Участков убывания оптимальной траектории нет и значения уже ближе к магистральным, но время решения на 61\% больше
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Подход 3: Программное решение}
+
+\begin{figure}[!h]
+
+\centering
+\includegraphics[width=0.7\linewidth]{33.png}
+
+\end{figure}
+\begin{itemize}
+  \item Участки убывания оптимальной траектории значительно сократились, значения стремятся к магистральным
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Сравнения программных \\ решений в подходах 1-3}
+\begin{figure}[!h!]
+\begin{center}
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 1}
+\includegraphics[width=1\linewidth]{f41.png}
+
+\label{fig:f1} %% метка рисунка для ссылки на него
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 2}
+\includegraphics[width=1\linewidth]{f42.png}
+
+\label{fig:f2}
+\end{minipage}
+\hfill
+\begin{minipage}[h]{0.32\linewidth}
+\caption{Подход 3}
+\includegraphics[width=1\linewidth]{f43.png}
+
+\label{fig:f3}
+\end{minipage}
+\end{center}
+\end{figure}
+Параметры:
+$$
+    \gamma = 0.1, \ \nu = 0.5, \  b=0.55, \  \rho = 0.15, \ \kappa = 1.5, \ z_0=0.1
+    $$
+\end{frame}
+
+
+\begin{frame}{Подход 1: Неограниченный EMPC}
+
+\begin{figure}[!h!]
+\hspace*{-1.5cm}
+\includegraphics[width=1.2\linewidth]{empc41.png}
+\label{fig:empc41}
+\end{figure}
+\begin{itemize}
+  \item  Оптимальные траектории задачи имеют продолжительные участки убывания
+  \item При увеличении $T$ c 10 до 30 с сохранением точности траектория достигает магистрали, однако время решения прогнозирующей задачи возрастает в 7.15 раз
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Подход 2: EMPC\\ с ограничениями-равенствами}
+\begin{figure}[!h!]
+\hspace*{-1.5cm}
+\includegraphics[width=1.2\linewidth]{empc42.png}
+\label{fig:empc41}
+\end{figure}
+Недостатки задачи с терминальным ограничением-равенством:
+\begin{itemize}
+\item  трудоемкость решения задачи
+\item  начальная недопустимость задачи с ограничением-равенством
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Подход 3: EMPC с терминальной\\ стоимостью}
+\begin{figure}[!h!]
+\hspace*{-1.5cm}
+\includegraphics[width=1.2\linewidth]{empc43.png}
+\label{fig:empc41}
+\end{figure}
+\begin{itemize}
+  \item Достигает магистрального значения
+  \item Имеет решение при любом горизонте Т
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Обоснование  терминальной стоимости}
+\begin{block}{Общая прогнозирующая задача для EMPC с терминальной стоимостью}
+$$
+    \min_{u} \int^{\tau+T}_\tau L(x(t),u(t))dt + W(x(\tau+T))
+$$
+$$
+    \dot{x}(t)=f(x(t),u(t)),\   x(\tau)=x_\tau
+    $$
+$$
+    u(t) \in U, \ x(t) \in X, \ t\in [\tau,\tau+T]
+    $$
+
+\end{block}
+
+\begin{itemize}
+\item Гамильтонова система для прогнозирующей задачи в общем виде:
+$$
+    \dot{p} =-(\partial f(x(t),u(t))/\partial x)^Tp(t)+\partial L(x(t),u(t))/\partial x
+$$
+$$
+    \dot{x}(t) = f(x(t),u(t)), t \in[\tau,\tau+T]
+    $$
+\item  Условие трансверсальности:
+$$
+    p(\tau+T)=p_1
+    $$
+
+\end{itemize}
+
+\end{frame}
+
+%-----------------------------------------------------------------
+\begin{frame}
+\begin{itemize}
+
+\item Выберем линейную терминальную стоимость $W(x)=p_1^Tx$
+
+\item Тогда:
+$$
+    p(\tau+T)\equiv -\partial W(z(\tau+T))/\partial x = p_1
+    $$
+\item
+Условия оптимальности имеют вид:
+$$
+    \partial L(x,u)/\partial x+(\partial f(x,u)/\partial x)^T\lambda=0
+    $$
+$$
+    f(x,u)=0
+    $$
+\item Гамильтонова система на магистральных значениях:
+    $$
+    -(\partial f(z_1,u_1)/\partial x)^Tp_1+\partial L(z_1,u_1)/\partial x = 0, \ \
+    f(z_1,u_1) = 0
+    $$
+\item  Установим, что   $p_1 = -\lambda_1$ удовлетворяет гамильтоновой системе, тогда $W(x)=-\lambda_1^Tx$
+
+\end{itemize}
+
+\begin{block}{}
+В  задаче роста терминальная стоимость содержит дисконтирование:
+$$
+    W(z(\tau+T))=e^{-\rho(\tau+T)}p_1 z(\tau +T)
+    $$
+
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Заключение}
+\begin{itemize}
+  \item Сравнивались три варианта EMPC
+\begin{itemize}
+  \item неограниченный ЕМРС
+  \item ЕМРС с терминальным ограничением типа равенства
+  \item ЕМРС с терминальной стоимостью
+\end{itemize}
+  \item Построено программное решение прогнозирующих задач оптимального роста технологического последователя для всех трех подходов
+  \item Исследовались параметры, позволяющие получить решение асимптотически приближающие магистральное значение
+  \item В результате численных экспериментов продемонстрировано преимущества третьего подхода
+\begin{itemize}
+\item  Простой вариант выбора терминальной стоимости
+\item  Задача оптимального управления проще с точки зрения численного решения
+\item Задача проще с вычислительной точки зрения
+\item Имеет решение при любом горизонте $T$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{}
+
+\center\Huge\structure{Спасибо за внимание!}
+\end{frame}
+
+
+\end{document} 
